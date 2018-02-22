@@ -21,29 +21,15 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Team from './Team'
 import Club from './Club'
 import Overview from './Overview'
+import { setActivePageHome } from '../actions/processor';
+import { connect } from 'react-redux'
 
 const { width, height } = Dimensions.get('window')
 
 class Home extends Component {
-  constructor() {
-    super()
-
-    this.state={
-      active: 1,
-			activePageFirst: true,
-			activePageSecond: false,
-			activePageThird: false,
-      title: 'START'
-    },
-    
-    this.handleActivePageFirst = this.handleActivePageFirst.bind(this)
-		this.handleActivePageSecond = this.handleActivePageSecond.bind(this)
-		this.handleActivePageThird = this.handleActivePageThird.bind(this)
-  }
-
 
 	renderContent() {
-		const { active } = this.state
+		const { active } = this.props.activePageHome
 		if (active === 2) {
 			return <Team />
 		}  else if (active === 3) {
@@ -53,32 +39,38 @@ class Home extends Component {
 	}
 
 	handleActivePageFirst() {
-		this.setState({
+		this.props.setActivePageHome({
+			title: 'OVERVIEW',
 			active: 1,
 			activePageFirst: true,
 			activePageSecond: false,
 			activePageThird: false,
-			title: 'OVERVIEW'
+			activePageFourth: false,
+			activePageFifth: false
 		})
 	}
 
 	handleActivePageSecond() {
-		this.setState({
+		this.props.setActivePageHome({
+			title: 'MY TEAM',
 			active: 2,
 			activePageFirst: false,
 			activePageSecond: true,
 			activePageThird: false,
-			title: 'CUSTOMER LIST'
+			activePageFourth: false,
+			activePageFifth: false
 		})
 	}
 
 	handleActivePageThird() {
-		this.setState({
+		this.props.setActivePageHome({
+			title: 'TEAM',
 			active: 3,
 			activePageFirst: false,
 			activePageSecond: false,
 			activePageThird: true,
-			title: 'TEAM'
+			activePageFourth: false,
+			activePageFifth: false
 		})
 	}
 
@@ -91,50 +83,65 @@ class Home extends Component {
 						<Button
 							vertical
 							style={styles.button}
-							active={this.state.activePageFirst}
+							active={this.props.activePageHome.activePageFirst}
 							onPress={() => this.handleActivePageFirst()}>
 							<Icon
 								name="ios-ribbon"
 								size={25}
 								style={{
-									color: this.state.activePageFirst
+									color: this.props.activePageHome.activePageFirst
 										? '#2d84f6'
 										: '#000000'
-								}}
-							/>
-							<Text style={styles.footerText}>OVERVIEW</Text>
+								}} />
+							<Text style={{
+								fontSize: 10,
+								marginTop: 5,
+								color: this.props.activePageHome.activePageFirst
+										? '#2d84f6'
+										: '#000000'
+							}}>OVERVIEW</Text>
 						</Button>
 						<Button
 							vertical
 							style={styles.button}
-							active={this.state.activePageSecond}
+							active={this.props.activePageHome.activePageSecond}
 							onPress={() => this.handleActivePageSecond()}>
 							<Icon
 								name="ios-contacts"
 								size={25}
 								style={{
-									color: this.state.activePageSecond
+									color: this.props.activePageHome.activePageSecond
 										? '#2d84f6'
 										: '#000000'
-								}}
-							/>
-							<Text style={styles.footerText}>MY TEAM</Text>
+								}} />
+							<Text style={{
+								fontSize: 10,
+								marginTop: 5,
+								color: this.props.activePageHome.activePageSecond
+										? '#2d84f6'
+										: '#000000'
+							}}>MY TEAM</Text>
 						</Button>
 						<Button
 							vertical
 							style={styles.button}
-							active={this.state.activePageThird}
+							active={this.props.activePageHome.activePageThird}
 							onPress={() => this.handleActivePageThird()}>
 							<Icon
 								name="ios-star"
 								size={25}
 								style={{
-									color: this.state.activePageThird
+									color: this.props.activePageHome.activePageThird
 										? '#2d84f6'
 										: '#000000'
-								}}
-							/>
-							<Text style={styles.footerText}>AG CLUB</Text>
+								}} />
+							<Text style={{
+								fontSize: 10,
+								marginTop: 5,
+								color: this.props.activePageHome.activePageThird
+										? '#2d84f6'
+										: '#000000'
+							}}>TEAM</Text>
 						</Button>
 					</FooterTab>
 				</Footer>
@@ -142,6 +149,14 @@ class Home extends Component {
 		)
 	}
 }
+
+const mapStateToProps = (state) => ({
+	activePageHome: state.activePageHome
+})
+
+const mapDispatchToProps = (dispatch) => ({
+	setActivePageHome: (active) => dispatch(setActivePageHome(active))
+})
 
 const styles = StyleSheet.create({
 	footerWrap: {
@@ -157,5 +172,5 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Home
+export default connect(mapStateToProps, mapDispatchToProps)(Home)
 
