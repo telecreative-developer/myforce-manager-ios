@@ -107,7 +107,7 @@ class Overview extends Component {
                 <View style={styles.headerDirection}>
                   <Thumbnail rounded large source={image} />
                   <View style={styles.managerData}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
                       <H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
                     </TouchableOpacity>
                     <View style={styles.headerDirection}>

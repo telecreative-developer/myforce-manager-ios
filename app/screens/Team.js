@@ -16,6 +16,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons'
 import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
+import { connect } from 'react-redux'
+import { setNavigate } from '../actions/processor'
 
 const { width, height } = Dimensions.get('window')
 
@@ -45,7 +47,7 @@ class Team extends Component {
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableOpacity>
+		<TouchableOpacity onPress={() => this.props.setNavigate('SalesProfile')}>
 			<ContactCardTeam
 				title={item.title}
 				regional={item.regional}
@@ -91,6 +93,10 @@ class Team extends Component {
 	}
 }
 
+const mapDispatchToProps = (dispatch) => ({
+  setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+})
+
 const styles = StyleSheet.create({
 	header: {
 		height: 70
@@ -116,4 +122,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Team
+export default connect(null, mapDispatchToProps)(Team)

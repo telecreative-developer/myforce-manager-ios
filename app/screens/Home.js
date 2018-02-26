@@ -110,6 +110,16 @@ class Home extends Component {
 				this.props.navigate.link,
 				this.props.navigate.data
 			)
+		} else if (this.props.navigate.link === 'Profile') {
+			this.props.navigation.navigate(
+				this.props.navigate.link,
+				this.props.navigate.data
+			)
+		} else if (this.props.navigate.link === 'SalesProfile') {
+			this.props.navigation.navigate(
+				this.props.navigate.link,
+				this.props.navigate.data
+			)
 		}
 		return (
 			<Container>
