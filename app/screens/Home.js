@@ -22,7 +22,7 @@ import Team from './Team'
 import Club from './Club'
 import Overview from './Overview'
 import Pipeline from './Pipeline'
-import Customer from './CustomerProfile'
+import Customer from './CustomerList'
 import { setActivePageHome } from '../actions/processor';
 import { connect } from 'react-redux'
 
@@ -139,7 +139,7 @@ class Home extends Component {
 							active={this.props.activePageHome.activePageSecond}
 							onPress={() => this.handleActivePageSecond()}>
 							<Icon
-								name="ios-ribbon"
+								name="md-pulse"
 								size={25}
 								style={{
 									color: this.props.activePageHome.activePageSecond ? '#2d84f6' : '#000000'
@@ -148,7 +148,7 @@ class Home extends Component {
 								fontSize: 10,
 								marginTop: 5,
 								color: this.props.activePageHome.activePageSecond ? '#2d84f6' : '#000000'
-							}}>PIPELINE</Text>
+							}}>TEAM ACTIVITY</Text>
 						</Button>
 						<Button
 							vertical
@@ -165,7 +165,7 @@ class Home extends Component {
 								fontSize: 10,
 								marginTop: 5,
 								color: this.props.activePageHome.activePageThird ? '#2d84f6' : '#000000'
-							}}>TEAM</Text>
+							}}>MY TEAM</Text>
 						</Button>
 						<Button
 							vertical
@@ -173,7 +173,7 @@ class Home extends Component {
 							active={this.props.activePageHome.activePageFourth}
 							onPress={() => this.handleActivePageFourth()}>
 							<Icon
-								name="ios-star"
+								name="ios-people"
 								size={25}
 								style={{
 									color: this.props.activePageHome.activePageFourth ? '#2d84f6' : '#000000'
@@ -182,7 +182,7 @@ class Home extends Component {
 								fontSize: 10,
 								marginTop: 5,
 								color: this.props.activePageHome.activePageFourth ? '#2d84f6' : '#000000'
-							}}>CUSTOMER</Text>
+							}}>CUSTOMERS</Text>
 						</Button>
 						<Button
 							vertical

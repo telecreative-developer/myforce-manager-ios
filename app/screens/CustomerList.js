@@ -11,7 +11,8 @@ import {
 	View,
 	Item,
 	Input,
-	Text
+	Text,
+	H3
 } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import ContactCardTeam from '../components/ContactCardTeam'
@@ -19,7 +20,7 @@ import defaultAvatar from '../assets/images/default-avatar.png'
 
 const { width, height } = Dimensions.get('window')
 
-class CustomerProfile extends Component {
+class CustomerList extends Component {
 	constructor() {
 		super()
 
@@ -27,16 +28,12 @@ class CustomerProfile extends Component {
       search: '',
       data: [
         {
-          title: 'Nando Reza Pratama',
-          regional: 'DKI-1',
-        },
-        {
-          title: 'Nando Reza Pratama',
-          regional: 'Palembang',
-        },
-        {
-          title: 'Nando Reza Pratama',
-          regional: 'DKI-2',
+          customerName: 'PT Astra Graphia',
+					picName: 'Nando Reza Pratama',
+				},
+				{
+          customerName: 'PT Telecreative',
+					picName: 'Kevin Hermawan',
         },
       ]
 		}
@@ -46,10 +43,17 @@ class CustomerProfile extends Component {
 
 	renderItems = ({ item }) => (
 		<TouchableOpacity>
-			<ContactCardTeam
-				title={item.title}
-				regional={item.regional}
-			/>
+			<View style={styles.card}>
+				<View style={styles.contentCard}>
+					<View style={styles.cardHeader}>
+						<H3 style={styles.textTitle}>{item.customerName}</H3>
+							<View style={styles.viewPerson}>
+								<Icon name="ios-person" color="#000000" size={15} />
+								<Text style={styles.textPerson}>{item.picName}</Text>
+							</View>
+					</View>
+				</View>
+			</View>
 		</TouchableOpacity>
 	)
 
@@ -63,7 +67,7 @@ class CustomerProfile extends Component {
 						</TouchableOpacity>
 					</Left>
 					<Body>
-						<Text style={styles.title}>MY TEAM</Text>
+						<Text style={styles.title}>CUSTOMERS</Text>
 					</Body>
 					<Right>
 						<TouchableOpacity>
@@ -113,7 +117,48 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		backgroundColor: '#ffffff',
 		width: width / 1.5
-	}
+	},
+	card: {
+		flex: 1,
+		display: 'flex',
+		justifyContent: 'center',
+		borderRadius: 5,
+		height: height / 8,
+		backgroundColor: '#ffffff',
+		marginBottom: '3%'
+	},
+	contentCard: {
+		display: 'flex',
+		flexDirection: 'row',
+		paddingRight: 90,
+		paddingLeft: 20
+	},
+	viewPerson: {
+		flexDirection: 'row',
+		marginTop: 3
+	},
+	textTitle: {
+		color: '#000000',
+		fontSize: 18,
+		fontWeight: 'bold'
+	},
+	textPerson: {
+		color: '#000000',
+		marginLeft: 5,
+		fontSize: 14
+	},
+	text: {
+		color: '#000000',
+		fontSize: 11,
+		marginTop: 5
+	},
+	cardHeader: {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		marginLeft: 15,
+		paddingBottom: 5
+	},
 })
 
-export default CustomerProfile
+export default CustomerList

@@ -13,7 +13,7 @@ import Start from './app/screens/Start'
 import Home from './app/screens/Home'
 import Approval from './app/screens/Approval'
 import Pipeline from './app/screens/Pipeline'
-import CustomerProfile from './app/screens/CustomerProfile'
+import CustomerList from './app/screens/CustomerList'
 
 const store = Reactotron.createStore(rootReducers, applyMiddleware(thunk))
 
@@ -23,7 +23,7 @@ const AppNavigator = StackNavigator({
   Home: {screen: Home},
   Approval: {screen: Approval},
   Pipeline: {screen: Pipeline},
-  CustomerProfile: {screen: CustomerProfile}
+  CustomerList: {screen: CustomerList}
 }, {
   headerMode: 'none'
 })
