@@ -17,13 +17,15 @@ Badge } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import LinearGradient from 'react-native-linear-gradient'
 import moment from 'moment'
+import { connect } from 'react-redux'
 import PieCharts from '../components/PieCharts'
 import BarCharts from '../components/BarCharts'
+import { fetchMyBranch } from '../actions/branches'
 import image from '../assets/images/default-avatar.png'
 
 const { width, height } = Dimensions.get('window')
 
-export default class Home extends Component {
+class Overview extends Component {
   constructor() {
     super()
 
@@ -48,6 +50,11 @@ export default class Home extends Component {
         }
       ]
     }
+  }
+
+  componentWillMount() {
+    const { sessionPersistance } = this.props
+    this.props.fetchMyBranch(sessionPersistance.id_manager, sessionPersistance.accessToken)
   }
 
   key = (item,index) => index
@@ -76,6 +83,7 @@ export default class Home extends Component {
   )
 
   render() {
+    const { sessionPersistance } = this.props
     return (
       <Container>
         <Header style={styles.header}>
@@ -98,7 +106,7 @@ export default class Home extends Component {
                   <Thumbnail rounded large source={image} />
                   <View style={styles.managerData}>
                     <TouchableOpacity>
-                      <H3 style={styles.profileName}>Nur Muhammad Ridho</H3>
+                      <H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
                     </TouchableOpacity>
                     <View style={styles.headerDirection}>
                       <Text style={styles.data}>Branch Manager - JKT 1</Text>
@@ -128,13 +136,21 @@ export default class Home extends Component {
           <FlatList 
             data={this.state.data}
             keyExtractor={this.key}
-            renderItem={this.renderItems}
-          />
+            renderItem={this.renderItems} />
         </Content>
       </Container>
     )
   }
 }
+
+const mapStateToProps = (state) => ({
+  sessionPersistance: state.sessionPersistance,
+  myBranch: state.myBranch
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchMyBranch: (id_manager, accessToken) => dispatch(fetchMyBranch(id_manager, accessToken))
+})
 
 const styles = StyleSheet.create({
   header: {
@@ -271,3 +287,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   }
 })
+
+export default connect(mapStateToProps, mapDispatchToProps)(Overview)
