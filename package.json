@@ -19,13 +19,16 @@
     "react-navigation": "^1.0.0-beta.23",
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "validator": "^9.4.1"
   },
   "devDependencies": {
     "babel-jest": "22.0.4",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.0.5",
-    "react-test-renderer": "16.2.0"
+    "react-test-renderer": "16.2.0",
+    "reactotron-react-native": "^1.14.0",
+    "reactotron-redux": "^1.13.0"
   },
   "jest": {
     "preset": "react-native"

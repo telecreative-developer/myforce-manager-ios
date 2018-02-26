@@ -89,16 +89,12 @@ class Home extends Component {
 								name="ios-ribbon"
 								size={25}
 								style={{
-									color: this.props.activePageHome.activePageFirst
-										? '#2d84f6'
-										: '#000000'
+									color: this.props.activePageHome.activePageFirst ? '#2d84f6' : '#000000'
 								}} />
 							<Text style={{
 								fontSize: 10,
 								marginTop: 5,
-								color: this.props.activePageHome.activePageFirst
-										? '#2d84f6'
-										: '#000000'
+								color: this.props.activePageHome.activePageFirst ? '#2d84f6' : '#000000'
 							}}>OVERVIEW</Text>
 						</Button>
 						<Button
@@ -110,16 +106,12 @@ class Home extends Component {
 								name="ios-contacts"
 								size={25}
 								style={{
-									color: this.props.activePageHome.activePageSecond
-										? '#2d84f6'
-										: '#000000'
+									color: this.props.activePageHome.activePageSecond ? '#2d84f6' : '#000000'
 								}} />
 							<Text style={{
 								fontSize: 10,
 								marginTop: 5,
-								color: this.props.activePageHome.activePageSecond
-										? '#2d84f6'
-										: '#000000'
+								color: this.props.activePageHome.activePageSecond ? '#2d84f6' : '#000000'
 							}}>MY TEAM</Text>
 						</Button>
 						<Button
@@ -131,16 +123,12 @@ class Home extends Component {
 								name="ios-star"
 								size={25}
 								style={{
-									color: this.props.activePageHome.activePageThird
-										? '#2d84f6'
-										: '#000000'
+									color: this.props.activePageHome.activePageThird ? '#2d84f6' : '#000000'
 								}} />
 							<Text style={{
 								fontSize: 10,
 								marginTop: 5,
-								color: this.props.activePageHome.activePageThird
-										? '#2d84f6'
-										: '#000000'
+								color: this.props.activePageHome.activePageThird ? '#2d84f6' : '#000000'
 							}}>TEAM</Text>
 						</Button>
 					</FooterTab>

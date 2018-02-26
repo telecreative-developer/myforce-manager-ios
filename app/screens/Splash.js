@@ -1,14 +1,26 @@
 import React, { Component } from 'react'
-import { StyleSheet, Image } from 'react-native'
+import { StyleSheet, AsyncStorage, Image } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { Container } from 'native-base'
 import moment from 'moment'
+import { connect } from 'react-redux'
 import logo from '../assets/images/logo-myforce-white.png'
 
 class Splash extends Component {
 	componentDidMount() {
-		setTimeout(() => {
-      this.props.navigation.navigate('Start')
+		setTimeout(async () => {
+			const response = await AsyncStorage.getItem('session')
+			const data = await JSON.parse(response)
+			if (data !== null) {
+				try {
+					await this.props.login(data.email, data.password)
+					await this.props.navigation.navigate('Home')
+				} catch (e) {
+					await this.props.navigation.navigate('Home')
+				}
+			} else {
+				await this.props.navigation.navigate('Start')
+			}
 		}, 2000)
 	}
 
@@ -25,6 +37,10 @@ class Splash extends Component {
 	}
 }
 
+const mapDispatchToProps = dispatch => ({
+	login: (email, password) => dispatch(login(email, password))
+})
+
 const styles = StyleSheet.create({
 	linearGradient: {
 		flex: 1,
@@ -36,4 +52,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Splash
+export default connect(null, mapDispatchToProps)(Splash)

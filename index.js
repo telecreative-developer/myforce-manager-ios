@@ -5,13 +5,15 @@ import { Provider } from 'react-redux'
 import { AppRegistry } from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import rootReducers from './app/reducers'
+import Reactotron from 'reactotron-react-native'
+import './ReactotronConfig'
 
 import Splash from './app/screens/Splash'
 import Start from './app/screens/Start'
 import Home from './app/screens/Home'
 import Approval from './app/screens/Approval'
 
-const store = createStore(rootReducers, applyMiddleware(thunk))
+const store = Reactotron.createStore(rootReducers, applyMiddleware(thunk))
 
 const AppNavigator = StackNavigator({
   Splash: {screen: Splash},

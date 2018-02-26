@@ -31,9 +31,9 @@ export const login = (email, password) => {
 
 const fetchUserWithEmail = (email, password, accessToken) => {
 	return async dispatch => {
-		await dispatch(setLoading(true, 'FETCH_USER_WITH_EMAIL'))
+		await dispatch(setLoading(true, 'FETCH_MANAGER_WITH_EMAIL'))
 		try {
-			const response = await fetch(`${url}/users?email=${email}`, {
+			const response = await fetch(`${url}/managers?email=${email}`, {
 				method: 'GET',
 				headers: {
 					Accept: 'application/json',
@@ -44,11 +44,11 @@ const fetchUserWithEmail = (email, password, accessToken) => {
 			const data = await response.json()
 			await dispatch(saveSessionForLocal({ email, password, accessToken }))
 			await dispatch(saveSessionForPersistance({ ...data.data[0], accessToken }))
-			await dispatch(setSuccess(true, 'FETCH_USER_WITH_EMAIL'))
-			await dispatch(setLoading(false, 'FETCH_USER_WITH_EMAIL'))
+			await dispatch(setSuccess(true, 'FETCH_MANAGER_WITH_EMAIL'))
+			await dispatch(setLoading(false, 'FETCH_MANAGER_WITH_EMAIL'))
 		} catch (e) {
-			await dispatch(setFailed(true, 'FETCH_USER_WITH_EMAIL', e))
-			await dispatch(setLoading(false, 'FETCH_USER_WITH_EMAIL'))
+			await dispatch(setFailed(true, 'FETCH_MANAGER_WITH_EMAIL', e))
+			await dispatch(setLoading(false, 'FETCH_MANAGER_WITH_EMAIL'))
 		}
 	}
 }

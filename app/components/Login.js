@@ -16,6 +16,10 @@ import {
 	Text,
 	Spinner
 } from 'native-base'
+import { isEmpty, isEmail } from 'validator'
+import { login } from '../actions/login'
+import { connect } from 'react-redux'
+import { setNavigate } from '../actions/processor'
 
 class Login extends Component {
 	constructor() {
@@ -25,7 +29,58 @@ class Login extends Component {
 			email: '',
 			password: ''
 		}
-  }
+	}
+
+	componentWillReceiveProps(props) {
+		if (
+			props.failed.process_on === 'PROCESS_LOGIN' &&
+			props.failed.condition === true &&
+			props.loading.process_on === 'PROCESS_LOGIN' &&
+			props.loading.condition === false
+		) {
+			Alert.alert('Login failed', props.failed.message)
+		} else if (
+			props.success.condition === true &&
+			props.success.process_on === 'FETCH_MANAGER_WITH_EMAIL' &&
+			props.loading.process_on === 'FETCH_MANAGER_WITH_EMAIL' &&
+			props.loading.condition === false
+		) {
+			props.setNavigate('Home')
+		}
+	}
+	
+	renderButtons() {
+		const { email, password } = this.state
+		if (!isEmpty(email) && !isEmpty(password)) {
+			return (
+				<Button
+					rounded
+					style={styles.loginButton}
+					onPress={() => this.handleLoginValidation()}>
+					{this.props.loading.condition === true && this.props.loading.process_on === 'PROCESS_LOGIN' ? (
+						<Spinner color="#FFFFFF" />
+					) : (
+						<Text>Login</Text>
+					)}
+				</Button>
+			)
+		} else {
+			return (
+				<Button rounded bordered style={styles.loginButton}>
+					<Text>Login</Text>
+				</Button>
+			)
+		}
+	}
+
+	handleLoginValidation() {
+		const { email, password } = this.state
+		if (!isEmail(email)) {
+			Alert.alert('Login Failed', 'Please input valid email address')
+		} else {
+			this.props.login(email, password)
+		}
+	}
 
 	render() {
 		return (
@@ -37,36 +92,39 @@ class Login extends Component {
 						marginBottom: 20,
 						color: '#2f2f4f',
 						textAlign: 'center'
-					}}>
-					Login
-				</Text>
+					}}>Login</Text>
 				<Form>
 					<Item floatingLabel>
 						<Label>Email</Label>
 						<Input
-							autoCapitalize = 'none'
+							autoCapitalize='none'
 							value={this.state.email}
-							onChangeText={email => this.setState({ email })}
-						/>
+							onChangeText={email => this.setState({email})} />
 					</Item>
 					<Item floatingLabel>
 						<Label>Password</Label>
 						<Input
 							secureTextEntry
 							value={this.state.password}
-							onChangeText={password => this.setState({ password })}
-						/>
+							onChangeText={password => this.setState({password})} />
 					</Item>
 				</Form>
-				<View style={styles.button}>
-          <Button rounded style={styles.loginButton}>
-            <Text>Login</Text>
-          </Button>
-        </View>
+				<View style={styles.button}>{this.renderButtons()}</View>
 			</Content>
 		)
 	}
 }
+
+const mapStateToProps = (state) => ({
+	loading: state.loading,
+	success: state.success,
+	failed: state.failed
+})
+
+const mapDispatchToProps = (dispatch) => ({
+	login: (email, password) => dispatch(login(email, password)),
+	setNavigate: (link, data) => dispatch(setNavigate(link, data))
+})
 
 const styles = StyleSheet.create({
 	paddingForm: {
@@ -90,4 +148,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Login
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
