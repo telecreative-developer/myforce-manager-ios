@@ -20,10 +20,12 @@ import moment from 'moment'
 import PieCharts from '../components/PieCharts'
 import BarCharts from '../components/BarCharts'
 import image from '../assets/images/default-avatar.png'
+import { connect } from 'react-redux'
+import { setNavigate } from '../actions/processor'
 
 const { width, height } = Dimensions.get('window')
 
-export default class Home extends Component {
+class Overview extends Component {
   constructor() {
     super()
 
@@ -65,7 +67,7 @@ export default class Home extends Component {
             <Badge style={styles.badge}>
               <Text>Identify Needs</Text>
             </Badge>
-            <TouchableOpacity style={styles.more} onPress={() => this.props.navigation.navigate('Approval')}>
+            <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', '')}>
               <Text style={styles.viewText}>View</Text>
               <Icon name="ios-arrow-forward" size={18} />
             </TouchableOpacity>
@@ -134,6 +136,13 @@ export default class Home extends Component {
       </Container>
     )
   }
+}
+
+
+const mapDispatchToProps = dispatch => {
+	return {
+		setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+	}
 }
 
 const styles = StyleSheet.create({
@@ -271,3 +280,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   }
 })
+
+export default connect(null, mapDispatchToProps)(Overview)
