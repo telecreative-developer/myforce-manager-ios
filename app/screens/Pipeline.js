@@ -93,9 +93,9 @@ class Pipeline extends Component {
 						<Text style={styles.title}>CUSTOMERS</Text>
 					</Body>
 					<Right>
-						<TouchableOpacity>
+						{/* <TouchableOpacity>
 							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</Right>
 				</Header>
 				<Tabs>

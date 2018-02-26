@@ -68,9 +68,9 @@ class Team extends Component {
 						<Text style={styles.title}>MY TEAM</Text>
 					</Body>
 					<Right>
-						<TouchableOpacity>
+						{/* <TouchableOpacity>
 							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</Right>
 				</Header>
 				<View style={styles.searchView}>

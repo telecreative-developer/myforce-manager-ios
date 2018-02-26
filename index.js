@@ -14,6 +14,7 @@ import Home from './app/screens/Home'
 import Approval from './app/screens/Approval'
 import Pipeline from './app/screens/Pipeline'
 import CustomerList from './app/screens/CustomerList'
+import CustomerProfile from './app/screens/CustomerProfile'
 import Profile from './app/screens/Profile'
 import SalesProfile from './app/screens/SalesProfile'
 
@@ -26,6 +27,7 @@ const AppNavigator = StackNavigator({
   Approval: {screen: Approval},
   Pipeline: {screen: Pipeline},
   CustomerList: {screen: CustomerList},
+  CustomerProfile: {screen: CustomerProfile},
   Profile: {screen: Profile},
   SalesProfile: {screen: SalesProfile}
 }, {

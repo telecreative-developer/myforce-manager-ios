@@ -90,9 +90,9 @@ class Club extends Component {
 						<Text style={styles.title}>AG CLUB</Text>
 					</Body>
 					<Right>
-						<TouchableOpacity>
+						{/* <TouchableOpacity>
 							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</Right>
 				</Header>
 				<View style={styles.customerHeader}>

@@ -17,6 +17,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons'
 import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
+import { connect } from 'react-redux'
+import { setNavigate } from '../actions/processor'
 
 const { width, height } = Dimensions.get('window')
 
@@ -42,7 +44,7 @@ class CustomerList extends Component {
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableOpacity>
+		<TouchableOpacity onPress={() => this.props.setNavigate('CustomerProfile')}>
 			<View style={styles.card}>
 				<View style={styles.contentCard}>
 					<View style={styles.cardHeader}>
@@ -70,9 +72,9 @@ class CustomerList extends Component {
 						<Text style={styles.title}>CUSTOMERS</Text>
 					</Body>
 					<Right>
-						<TouchableOpacity>
+						{/* <TouchableOpacity>
 							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</Right>
 				</Header>
 				<View style={styles.searchView}>
@@ -92,6 +94,12 @@ class CustomerList extends Component {
 				</Content>
 			</Container>
 		)
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+		setNavigate: (link, data) => dispatch(setNavigate(link, data)),
 	}
 }
 
@@ -161,4 +169,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default CustomerList
+export default connect(null, mapDispatchToProps)(CustomerList)
