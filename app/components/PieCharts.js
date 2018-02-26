@@ -5,18 +5,16 @@ import { Pie } from 'react-native-pathjs-charts'
 export default class PieCharts extends Component {
   render() {
     let data = [{
-      "name": "Washington",
-      "population": 7694980
+      "name": "Target",
+      "percentage": 20
     }, {
-      "name": "Oregon",
-      "population": 2584160
-    }, {
-      "name": "Minnesota",
-      "population": 6590667,
-      "color": {'r':223,'g':154,'b':20}
-    }, {
-      "name": "Alaska",
-      "population": 7284698
+      "name": "Completed",
+      "percentage": 20
+    }]
+
+    let dataTarget = [{
+      "name": "Target",
+      "percentage": 20
     }]
   
     let options = {
@@ -46,9 +44,9 @@ export default class PieCharts extends Component {
     }
     return (
       <View style={styles.container}>
-        <Pie data={data}
+        <Pie data={this.props.completed === 0 ? dataTarget : data}
           options={options}
-          accessorKey="population"
+          accessorKey="percentage"
           margin={{top: 20, left: 20, right: 20, bottom: 20}}
           color="#2980B9"
           pallete={
@@ -61,7 +59,7 @@ export default class PieCharts extends Component {
               {'r':198,'g':84,'b':45}
             ]
           }
-          r={50}
+          r={0}
           R={150}
           legendPosition="topLeft"
           label={{
@@ -78,8 +76,6 @@ export default class PieCharts extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: 'transparent',
   },
 })

@@ -12,6 +12,7 @@
     "prop-types": "^15.6.0",
     "react": "16.2.0",
     "react-native": "0.52.0",
+    "react-native-animated-bar": "^0.2.0",
     "react-native-linear-gradient": "^2.4.0",
     "react-native-pathjs-charts": "0.0.33",
     "react-native-step-indicator": "0.0.7",

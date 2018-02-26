@@ -21,6 +21,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Team from './Team'
 import Club from './Club'
 import Overview from './Overview'
+import Pipeline from './Pipeline'
+import Customer from './CustomerProfile'
 import { setActivePageHome } from '../actions/processor';
 import { connect } from 'react-redux'
 
@@ -31,8 +33,12 @@ class Home extends Component {
 	renderContent() {
 		const { active } = this.props.activePageHome
 		if (active === 2) {
-			return <Team />
-		}  else if (active === 3) {
+			return <Pipeline />
+		}	else if (active === 3) {
+				return <Team />
+		} else if (active === 4) {
+			return <Customer />
+		}	else if (active === 5) {
 			return <Club />
 		}
 		return <Overview />
@@ -52,7 +58,7 @@ class Home extends Component {
 
 	handleActivePageSecond() {
 		this.props.setActivePageHome({
-			title: 'MY TEAM',
+			title: 'PIPELINE',
 			active: 2,
 			activePageFirst: false,
 			activePageSecond: true,
@@ -64,13 +70,37 @@ class Home extends Component {
 
 	handleActivePageThird() {
 		this.props.setActivePageHome({
-			title: 'TEAM',
+			title: 'CUSTOMER',
 			active: 3,
 			activePageFirst: false,
 			activePageSecond: false,
 			activePageThird: true,
 			activePageFourth: false,
 			activePageFifth: false
+		})
+	}
+
+	handleActivePageFourth() {
+		this.props.setActivePageHome({
+			title: 'TEAM',
+			active: 4,
+			activePageFirst: false,
+			activePageSecond: false,
+			activePageThird: false,
+			activePageFourth: true,
+			activePageFifth: false
+		})
+	}
+
+	handleActivePageFifth() {
+		this.props.setActivePageHome({
+			title: 'CLUB',
+			active: 5,
+			activePageFirst: false,
+			activePageSecond: false,
+			activePageThird: false,
+			activePageFourth: false,
+			activePageFifth: true
 		})
 	}
 
@@ -109,7 +139,7 @@ class Home extends Component {
 							active={this.props.activePageHome.activePageSecond}
 							onPress={() => this.handleActivePageSecond()}>
 							<Icon
-								name="ios-contacts"
+								name="ios-ribbon"
 								size={25}
 								style={{
 									color: this.props.activePageHome.activePageSecond ? '#2d84f6' : '#000000'
@@ -118,7 +148,7 @@ class Home extends Component {
 								fontSize: 10,
 								marginTop: 5,
 								color: this.props.activePageHome.activePageSecond ? '#2d84f6' : '#000000'
-							}}>MY TEAM</Text>
+							}}>PIPELINE</Text>
 						</Button>
 						<Button
 							vertical
@@ -126,7 +156,7 @@ class Home extends Component {
 							active={this.props.activePageHome.activePageThird}
 							onPress={() => this.handleActivePageThird()}>
 							<Icon
-								name="ios-star"
+								name="ios-contacts"
 								size={25}
 								style={{
 									color: this.props.activePageHome.activePageThird ? '#2d84f6' : '#000000'
@@ -136,6 +166,40 @@ class Home extends Component {
 								marginTop: 5,
 								color: this.props.activePageHome.activePageThird ? '#2d84f6' : '#000000'
 							}}>TEAM</Text>
+						</Button>
+						<Button
+							vertical
+							style={styles.button}
+							active={this.props.activePageHome.activePageFourth}
+							onPress={() => this.handleActivePageFourth()}>
+							<Icon
+								name="ios-star"
+								size={25}
+								style={{
+									color: this.props.activePageHome.activePageFourth ? '#2d84f6' : '#000000'
+								}} />
+							<Text style={{
+								fontSize: 10,
+								marginTop: 5,
+								color: this.props.activePageHome.activePageFourth ? '#2d84f6' : '#000000'
+							}}>CUSTOMER</Text>
+						</Button>
+						<Button
+							vertical
+							style={styles.button}
+							active={this.props.activePageHome.activePageFifth}
+							onPress={() => this.handleActivePageFifth()}>
+							<Icon
+								name="ios-star"
+								size={25}
+								style={{
+									color: this.props.activePageHome.activePageFifth ? '#2d84f6' : '#000000'
+								}} />
+							<Text style={{
+								fontSize: 10,
+								marginTop: 5,
+								color: this.props.activePageHome.activePageFifth ? '#2d84f6' : '#000000'
+							}}>CLUB</Text>
 						</Button>
 					</FooterTab>
 				</Footer>

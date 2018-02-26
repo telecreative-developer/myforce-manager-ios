@@ -17,7 +17,8 @@ Badge,
 Button,
 Form,
 Item,
-Input } from 'native-base'
+Input,
+Footer } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import PipelineProgress from '../components/PipelineProgress'
 
@@ -33,10 +34,7 @@ export default class componentName extends Component {
           question: 'Kriteria apa saja yang mereka butuhkan dari sebuah solusi ?'
         },
         {
-          question: 'Kriteria apa saja yang mereka butuhkan dari sebuah solusi ?'
-        },
-        {
-          question: 'Kriteria apa saja yang mereka butuhkan dari sebuah solusi ?'
+          question: 'Deskripsikan Aktivitas pada tahap ini?'
         },
       ]
     }
@@ -105,14 +103,14 @@ export default class componentName extends Component {
               </Col>
               <Col style={{flex: 0.2}}>
                 <Text style={styles.textDetail}>: Rp 200,000,000</Text>
-                <Text style={styles.textDetail}>: ORS</Text>
+                <Text style={styles.textDetail}>: -</Text>
               </Col>
             </Grid>
           </View>
           <View style={{
             backgroundColor: '#ffffff', 
             width: '100%', 
-            minHeight: height / 1.3,
+            minHeight: height / 1.5,
             marginBottom: 15,
             padding: 20,
           }}>
@@ -129,6 +127,11 @@ export default class componentName extends Component {
             />
           </View>
         </Content>
+        <Footer style={styles.cardFooterCart}>
+					<Button full style={styles.cardButtonCart}>
+						<Text style={styles.approve}>APPROVE</Text>
+					</Button>
+				</Footer>
       </Container>
     )
   }
@@ -164,13 +167,33 @@ const styles = StyleSheet.create({
   },
   answerBox: {
     borderRadius: 0,
-    height: 100,
     marginBottom: 30,
+    alignItems: 'flex-start',
+    minHeight: height / 6,
+    height: 'auto'
   },
   answer: {
     fontSize: 14,
     textAlignVertical: 'top',
     marginTop: 0,
     paddingTop: 0
+  },
+  cardFooterCart: {
+		position: 'absolute',
+		bottom: 0,
+		height: '6%',
+		backgroundColor: 'transparent'
+	},
+	cardButtonCart: {
+		backgroundColor: '#27ae60',
+		width: '100%',
+		height: '100%',
+		flexDirection: 'row',
+		borderRadius: 0
+  },
+  approve: {
+    fontWeight: 'bold',
+    fontSize: 18
   }
 })
+

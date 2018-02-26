@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import { Container } from 'native-base'
 import moment from 'moment'
 import { connect } from 'react-redux'
+import { login } from '../actions/login'
 import logo from '../assets/images/logo-myforce-white.png'
 
 class Splash extends Component {

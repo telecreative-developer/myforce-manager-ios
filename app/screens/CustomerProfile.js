@@ -19,7 +19,7 @@ import defaultAvatar from '../assets/images/default-avatar.png'
 
 const { width, height } = Dimensions.get('window')
 
-class Team extends Component {
+class CustomerProfile extends Component {
 	constructor() {
 		super()
 
@@ -116,4 +116,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Team
+export default CustomerProfile

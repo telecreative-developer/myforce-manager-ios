@@ -17,11 +17,13 @@ Badge } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import LinearGradient from 'react-native-linear-gradient'
 import moment from 'moment'
+import { connect } from 'react-redux'
 import PieCharts from '../components/PieCharts'
 import BarCharts from '../components/BarCharts'
+import { fetchMyBranch } from '../actions/branches'
 import image from '../assets/images/default-avatar.png'
-import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
+import AnimatedBar from "react-native-animated-bar"
 
 const { width, height } = Dimensions.get('window')
 
@@ -52,6 +54,11 @@ class Overview extends Component {
     }
   }
 
+  componentWillMount() {
+    const { sessionPersistance } = this.props
+    this.props.fetchMyBranch(sessionPersistance.id_manager, sessionPersistance.accessToken)
+  }
+
   key = (item,index) => index
 
   renderItems = ({item}) => (
@@ -78,6 +85,7 @@ class Overview extends Component {
   )
 
   render() {
+    const { sessionPersistance } = this.props
     return (
       <Container>
         <Header style={styles.header}>
@@ -100,7 +108,7 @@ class Overview extends Component {
                   <Thumbnail rounded large source={image} />
                   <View style={styles.managerData}>
                     <TouchableOpacity>
-                      <H3 style={styles.profileName}>Nur Muhammad Ridho</H3>
+                      <H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
                     </TouchableOpacity>
                     <View style={styles.headerDirection}>
                       <Text style={styles.data}>Branch Manager - JKT 1</Text>
@@ -115,35 +123,80 @@ class Overview extends Component {
             </Grid>
           </LinearGradient>
         </View>
-        <Content style={styles.content}>
-          <View style={styles.chartsDirection}>
-            <View style={styles.leftCharts}>
-              <PieCharts />
-            </View>
-            <View style={styles.rightCharts}>
-              <BarCharts />
-            </View>
-          </View>
-          <View>
-            <Text style={styles.approvalText}>Approval Request</Text>
-          </View>
-          <FlatList 
-            data={this.state.data}
-            keyExtractor={this.key}
-            renderItem={this.renderItems}
-          />
+        <Content style={styles.content} scrollEnabled={false}>
+        <Grid style={styles.chartsDirection}>
+						<Col style={styles.leftCharts}>
+							<PieCharts />
+						</Col>
+						<Col style={styles.rightCharts}>
+							<Text style={styles.chartTitle}>Gross In</Text>
+							<Text style={styles.chartMonth}>Monthly</Text>
+							<Text style={styles.chartPercentage}>100%</Text>
+							<Text style={styles.chartTargetUnder}>30 unit targets</Text>
+							<Text style={styles.chartYear}>Yearly</Text>
+							<AnimatedBar 
+								progress={0.2}
+								style={styles.bar}
+								height={40}
+								borderColor="#DDD"
+								barColor="tomato"
+								fillColor="grey"	
+								borderRadius={5}
+								borderWidth={5}>
+									<View style={styles.row}>
+										<Text style={styles.barText}>
+											100%
+										</Text>
+									</View>
+							</AnimatedBar>
+							<Text style={styles.chartTarget}>360 unit targets</Text>
+						</Col>
+					</Grid>
+					<Grid style={styles.chartsDirection}>
+						<Col style={styles.leftCharts}>
+							<PieCharts />
+						</Col>
+						<Col style={styles.rightCharts}>
+							<Text style={styles.chartTitle}>Revenue ORS</Text>
+							<Text style={styles.chartMonth}>Monthly</Text>
+							<Text style={styles.chartPercentage}>100%</Text>
+							<Text style={styles.chartTarget}>Rp. 120.000.000 Mio of</Text>
+							<Text style={styles.chartTargetUnder}>Rp. 1.200.000 Mio targets</Text>
+							<Text style={styles.chartYear}>Yearly</Text>
+							<AnimatedBar 
+								progress={0.2}
+								style={styles.bar}
+								height={40}
+								borderColor="#DDD"
+								barColor="tomato"
+								fillColor="grey"	
+								borderRadius={5}
+								borderWidth={5}>
+									<View style={styles.row}>
+										<Text style={styles.barText}>
+										  100%
+										</Text>
+									</View>
+							</AnimatedBar>
+							<Text style={styles.chartTarget}>Rp. 1.200.000.000 Mio of</Text>
+							<Text style={styles.chartTarget}>Rp. 1.200.000.000 Mio targets</Text>
+						</Col>
+					</Grid>
         </Content>
       </Container>
     )
   }
 }
 
+const mapStateToProps = (state) => ({
+  sessionPersistance: state.sessionPersistance,
+  myBranch: state.myBranch
+})
 
-const mapDispatchToProps = dispatch => {
-	return {
-		setNavigate: (link, data) => dispatch(setNavigate(link, data)),
-	}
-}
+const mapDispatchToProps = (dispatch) => ({
+  setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+  fetchMyBranch: (id_manager, accessToken) => dispatch(fetchMyBranch(id_manager, accessToken))
+})
 
 const styles = StyleSheet.create({
   header: {
@@ -178,6 +231,46 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center'
   },
+  chartTitle: {
+		fontSize: 26,
+		fontWeight: '900',
+		marginBottom: 15
+	},
+	chartMonth: {
+		fontSize: 20,
+		fontWeight: 'bold',
+	},
+	chartPercentage: {
+		fontSize: 34,
+		fontWeight: 'bold',
+		color: '#e87e04'
+  },
+  chartTarget: {
+		fontSize: 16,
+	},
+	chartTargetUnder: {
+		fontSize: 16,
+		marginBottom: 15
+	},
+	chartYear: {
+		fontSize: 20,
+		fontWeight: 'bold',
+  },
+  bar: {
+		width: width / 2.5,
+		marginVertical: 10,
+	},
+	barText: {
+		fontSize: 18,
+		backgroundColor: "transparent",
+		color: "#FFF",
+		textAlign: 'center'
+  },
+  row: {
+		display: 'flex',
+		flex: 1,
+		justifyContent: 'center'
+	},
   year: {
     color: '#ffffff',
     fontSize: 32,
@@ -208,26 +301,19 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 15,
   },
-  chartsDirection: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingBottom: 15,
-  },
-  leftCharts: {
-    flex: 1,
-    backgroundColor: '#ffffff', 
-    width: width / 2.1, 
-    height: height / 2.5, 
-    marginRight: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  rightCharts: {
-    backgroundColor: '#ffffff', 
-    width: width / 2.1, 
-    height: height / 2.5
-  },
+	chartsDirection: {
+		display: 'flex',
+		height: height / 2.9,
+		backgroundColor: '#fff',
+		marginBottom: 10,
+	},
+	leftCharts: {
+		flex: 0.5
+	},
+	rightCharts: {
+		flex: 0.5,
+		justifyContent: 'center',
+	},
   approvalText: {
     fontSize: 18,
     color: '#000000',
@@ -281,4 +367,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default connect(null, mapDispatchToProps)(Overview)
+export default connect(mapStateToProps, mapDispatchToProps)(Overview)

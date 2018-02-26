@@ -101,17 +101,12 @@ class Club extends Component {
 						style={styles.linearGradient}>
 						<Grid>
 							<Col style={styles.leftCol}>
-								<View style={styles.headerDirection}>
+								<View style={styles.headerDirectionData}>
 									<Thumbnail rounded large source={defaultAvatar} />
 									<View>
 										<TouchableOpacity>
 											<H3 style={styles.profileName}>Nando Reza Pratama</H3>
 										</TouchableOpacity>
-										<View style={styles.headerDirection}>
-											<Text style={styles.Data}>
-                        Ini sih namanya BIO
-											</Text>
-										</View>
 										<View style={styles.headerDirection}>
 											<Text style={styles.Data}>20 Pipeline Created</Text>
 										</View>
@@ -136,9 +131,6 @@ class Club extends Component {
 								keyExtractor={this.key}
 								renderItem={this.renderItemUsers}
 							/> */}
-							<TouchableOpacity>
-								<Text style={styles.see}>See Complete Table</Text>
-							</TouchableOpacity>
 						</View>
 						<View style={styles.leaderboard}>
 							<Text style={styles.leaderboardTitle}>National Leaderboard</Text>
@@ -147,9 +139,6 @@ class Club extends Component {
 								keyExtractor={this.key}
 								renderItem={this.renderItemUsers}
 							/> */}
-							<TouchableOpacity>
-								<Text style={styles.see}>See Complete Table</Text>
-							</TouchableOpacity>
 						</View>
 					</View>
 					<View style={styles.team}>
@@ -188,6 +177,13 @@ const styles = StyleSheet.create({
 	headerDirection: {
 		display: 'flex',
 		flexDirection: 'row',
+		marginTop: 5,
+		marginLeft: 25
+	},
+	headerDirectionData: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
 		marginTop: 5,
 		marginLeft: 25
 	},
@@ -263,7 +259,7 @@ const styles = StyleSheet.create({
 		fontSize: 12
 	},
 	leftCol: {
-		flex: 0.8
+		flex: 0.8,
 	},
 	rightCol: {
 		flex: 0.2,
