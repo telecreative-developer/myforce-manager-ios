@@ -17,6 +17,9 @@ import CustomerList from './app/screens/CustomerList'
 import CustomerProfile from './app/screens/CustomerProfile'
 import Profile from './app/screens/Profile'
 import SalesProfile from './app/screens/SalesProfile'
+import Settings from './app/screens/Settings'
+import EditProfile from './app/screens/EditProfile'
+import ChangePassword from './app/screens/ChangePassword'
 
 const store = Reactotron.createStore(rootReducers, applyMiddleware(thunk))
 
@@ -29,7 +32,10 @@ const AppNavigator = StackNavigator({
   CustomerList: {screen: CustomerList},
   CustomerProfile: {screen: CustomerProfile},
   Profile: {screen: Profile},
-  SalesProfile: {screen: SalesProfile}
+  SalesProfile: {screen: SalesProfile},
+  Settings: {screen: Settings},
+  EditProfile: {screen: EditProfile},
+  ChangePassword: {screen: ChangePassword}
 }, {
   headerMode: 'none'
 })
