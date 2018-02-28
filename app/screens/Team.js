@@ -18,6 +18,7 @@ import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
+import { fetchSales } from '../actions/sales'
 
 const { width, height } = Dimensions.get('window')
 
@@ -26,32 +27,20 @@ class Team extends Component {
 		super()
 
 		this.state = {
-      search: '',
-      data: [
-        {
-          title: 'Nando Reza Pratama',
-          regional: 'DKI-1',
-        },
-        {
-          title: 'Nando Reza Pratama',
-          regional: 'Palembang',
-        },
-        {
-          title: 'Nando Reza Pratama',
-          regional: 'DKI-2',
-        },
-      ]
+      search: ''
 		}
+	}
+
+	componentWillMount() {
+		const { sessionPersistance } = this.props
+		this.props.fetchSales(sessionPersistance.id_branch, sessionPersistance.accessToken)
 	}
 
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableOpacity onPress={() => this.props.setNavigate('SalesProfile')}>
-			<ContactCardTeam
-				title={item.title}
-				regional={item.regional}
-			/>
+		<TouchableOpacity onPress={() => this.props.setNavigate('SalesProfile', item)}>
+			<ContactCardTeam name={`${item.first_name} ${item.last_name}`} />
 		</TouchableOpacity>
 	)
 
@@ -77,23 +66,28 @@ class Team extends Component {
 					<Item style={styles.searchForm} rounded>
 						<Input
 							placeholder="Search"
-						/>
+							onChangeText={name => this.setState({ search: name })} />
 						<Icon size={25} name="ios-search" />
 					</Item>
 				</View>
 				<Content style={styles.content}>
 					<FlatList
-						data={this.state.data}
+						data={this.props.sales}
 						keyExtractor={this.key}
-						renderItem={this.renderItems}
-					/>
+						renderItem={this.renderItems} />
 				</Content>
 			</Container>
 		)
 	}
 }
 
+const mapStateToProps = (state) => ({
+	sales: state.sales,
+	sessionPersistance: state.sessionPersistance
+})
+
 const mapDispatchToProps = (dispatch) => ({
+	fetchSales: (id_branch, accessToken) => dispatch(fetchSales(id_branch, accessToken)),
   setNavigate: (link, data) => dispatch(setNavigate(link, data)),
 })
 
@@ -122,4 +116,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default connect(null, mapDispatchToProps)(Team)
+export default connect(mapStateToProps, mapDispatchToProps)(Team)

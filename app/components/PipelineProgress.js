@@ -28,14 +28,6 @@ const customStyles = {
 }
 
 export default class PipelineProgress extends Component {
-  constructor() {
-    super()
-
-    this.state = {
-        currentPosition: 3
-    }
-  }
-
   onPageChange(position) {
     this.setState({currentPosition: position});
   }
@@ -48,10 +40,10 @@ export default class PipelineProgress extends Component {
     return (
       <StepIndicator
         customStyles={customStyles}
-        currentPosition={this.state.currentPosition}
+        currentPosition={this.props.currentPosition}
         stepCount={6}
         labels={labels}
-        onPress = {this.props.modal}
+        onPress={this.props.modal}
       />
     )
   }

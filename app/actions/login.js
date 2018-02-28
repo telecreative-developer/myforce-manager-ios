@@ -42,8 +42,17 @@ const fetchUserWithEmail = (email, password, accessToken) => {
 				}
 			})
 			const data = await response.json()
+			const responseBranch = await fetch(`${url}/branches?id_manager=${data.data[0].id_manager}`, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json',
+					Authorization: accessToken
+				}
+			})
+			const dataBranch = await responseBranch.json()
 			await dispatch(saveSessionForLocal({ email, password, accessToken }))
-			await dispatch(saveSessionForPersistance({ ...data.data[0], accessToken }))
+			await dispatch(saveSessionForPersistance({ ...data.data[0], ...dataBranch.data[0], accessToken }))
 			await dispatch(setSuccess(true, 'FETCH_MANAGER_WITH_EMAIL'))
 			await dispatch(setLoading(false, 'FETCH_MANAGER_WITH_EMAIL'))
 		} catch (e) {

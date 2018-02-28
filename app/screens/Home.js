@@ -214,7 +214,7 @@ class Home extends Component {
 								fontSize: 10,
 								marginTop: 5,
 								color: this.props.activePageHome.activePageFifth ? '#2d84f6' : '#000000'
-							}}>CLUB</Text>
+							}}>AG CLUB</Text>
 						</Button>
 					</FooterTab>
 				</Footer>

@@ -136,6 +136,7 @@ class Profile extends Component {
 
 	render() {
 		const { onScroll = () => {} } = this.props
+		const { sessionPersistance } = this.props
 		return (
 			<ParallaxScrollView
 				onScroll={onScroll}
@@ -151,7 +152,7 @@ class Profile extends Component {
 								<Icon name="md-create" color={'#ffffff'} size={20} />
 							</Badge>
 						</TouchableOpacity>
-						<Text style={styles.sectionSpeakerText}>Nando Reza Pratama</Text>
+						<Text style={styles.sectionSpeakerText}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</Text>
 						{/* <Text style={styles.sectionTitleText}>
 							{sessionPersistance.bio}
 						</Text> */}
@@ -170,7 +171,7 @@ class Profile extends Component {
 				)}
 				renderStickyHeader={() => (
 					<View key="sticky-header" style={styles.stickySection}>
-						<Text style={styles.stickySectionText}>Nando Reza Pratama</Text>
+						<Text style={styles.stickySectionText}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</Text>
 					</View>
 				)}
 				renderFixedHeader={this.renderFixedHeader}>
@@ -179,40 +180,39 @@ class Profile extends Component {
 					<Form>
 						<Item stackedLabel disabled>
 							<Label style={styles.labelText}>First Name</Label>
-							<Input disabled placeholder='Nando Reza' />
+							<Input disabled placeholder={sessionPersistance.first_name} />
 						</Item>
 						<Item stackedLabel disabled>
 							<Label style={styles.labelText}>Last Name</Label>
-							<Input disabled placeholder='Pratama' />
+							<Input disabled placeholder={sessionPersistance.last_name} />
 						</Item>
 						<Item stackedLabel disabled style={styles.itemForm}>
 							<Label style={styles.labelText}>Username</Label>
-							<Input disabled placeholder='nandoreza' />
+							<Input disabled placeholder={sessionPersistance.username} />
 						</Item>
 						<Item stackedLabel disabled style={styles.itemForm}>
 							<Label style={styles.labelText}>Gender</Label>
-							<Input
-								disabled
-								placeholder='Male' />
+							{sessionPersistance.gender === 1 ? (
+								<Input disabled placeholder='Male' />
+							) : (
+								<Input disabled placeholder='Female' />
+							)}
 						</Item>
 						<Item stackedLabel disabled style={styles.itemForm}>
 							<Label style={styles.labelText}>Email</Label>
-							<Input disabled placeholder='nandonrp@gmail.com' />
+							<Input disabled placeholder={sessionPersistance.email} />
 						</Item>
 						<Item stackedLabel disabled style={styles.itemForm}>
 							<Label style={styles.labelText}>Branch</Label>
-							<Input
-								disabled
-								placeholder='Jakarta-1'
-							/>
+							<Input disabled placeholder={sessionPersistance.branch} />
 						</Item>
 						<Item stackedLabel disabled style={styles.itemForm}>
 							<Label style={styles.labelText}>Address</Label>
-							<Input disabled placeholder='Jl. Lorem Ipsum' />
+							<Input disabled placeholder={sessionPersistance.address} />
 						</Item>
 						<Item stackedLabel disabled style={styles.itemForm}>
 							<Label style={styles.labelText}>Phone Number</Label>
-							<Input disabled placeholder='0855399202'/>
+							<Input disabled placeholder={sessionPersistance.phone} />
 						</Item>
 					</Form>
 				</View>
@@ -221,13 +221,11 @@ class Profile extends Component {
 	}
 }
 
-// const mapStateToProps = state => {
-// 	return {
-// 		users: state.users,
-// 		loading: state.loading,
-// 		sessionPersistance: state.sessionPersistance
-// 	}
-// }
+const mapStateToProps = state => ({
+	users: state.users,
+	loading: state.loading,
+	sessionPersistance: state.sessionPersistance
+})
 
 // const mapDispatchToProps = dispatch => {
 // 	return {
@@ -381,4 +379,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Profile
+export default connect(mapStateToProps)(Profile)

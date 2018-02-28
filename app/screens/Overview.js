@@ -28,31 +28,6 @@ import AnimatedBar from "react-native-animated-bar"
 const { width, height } = Dimensions.get('window')
 
 class Overview extends Component {
-  constructor() {
-    super()
-
-    this.state = {
-      data: [
-        {
-          salesName: 'Nando Reza Pratama',
-          pipelineTitle: 'Fuji Xerox A-200 Super Fast',
-          customer: 'PT Astra Graphia',
-          pipelineStep: 'Identify Opportunity'
-        },
-        {
-          salesName: 'Kevin Hermawan',
-          pipelineTitle: 'Fuji Xerox A-200 Super Fast',
-          customer: 'PT Astra Graphia',
-          pipelineStep: 'Identify Opportunity'
-        },        {
-          salesName: 'Rendi Simamora',
-          pipelineTitle: 'Fuji Xerox A-200 Super Fast',
-          customer: 'PT Astra Graphia',
-          pipelineStep: 'Identify Opportunity'
-        }
-      ]
-    }
-  }
 
   componentWillMount() {
     const { sessionPersistance } = this.props
@@ -111,7 +86,7 @@ class Overview extends Component {
                       <H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
                     </TouchableOpacity>
                     <View style={styles.headerDirection}>
-                      <Text style={styles.data}>Branch Manager - JKT 1</Text>
+                      <Text style={styles.data}>Branch Manager - {sessionPersistance.branch}</Text>
                     </View>
                   </View>
                 </View>

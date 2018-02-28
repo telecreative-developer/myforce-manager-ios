@@ -19,6 +19,8 @@ import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
+import { fetchCustomers } from '../actions/customers'
+import { fetchPics } from '../actions/pics'
 
 const { width, height } = Dimensions.get('window')
 
@@ -27,32 +29,30 @@ class CustomerList extends Component {
 		super()
 
 		this.state = {
-      search: '',
-      data: [
-        {
-          customerName: 'PT Astra Graphia',
-					picName: 'Nando Reza Pratama',
-				},
-				{
-          customerName: 'PT Telecreative',
-					picName: 'Kevin Hermawan',
-        },
-      ]
+      search: ''
 		}
+	}
+
+	componentWillMount() {
+		const { sessionPersistance } = this.props
+		this.props.fetchPics(sessionPersistance.accessToken)
+		this.props.fetchCustomers(sessionPersistance.id_branch, sessionPersistance.accessToken)
 	}
 
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableOpacity onPress={() => this.props.setNavigate('CustomerProfile')}>
+		<TouchableOpacity onPress={() => this.props.setNavigate('CustomerProfile', item)}>
 			<View style={styles.card}>
 				<View style={styles.contentCard}>
 					<View style={styles.cardHeader}>
-						<H3 style={styles.textTitle}>{item.customerName}</H3>
-							<View style={styles.viewPerson}>
+						<H3 style={styles.textTitle}>{item.name}</H3>
+						{this.props.pics.filter(data => data.id_customer === item.id_customer).map((d, index) => (
+							<View style={styles.viewPerson} key={index}>
 								<Icon name="ios-person" color="#000000" size={15} />
-								<Text style={styles.textPerson}>{item.picName}</Text>
+								<Text style={styles.textPerson}>{d.name}</Text>
 							</View>
+						))}
 					</View>
 				</View>
 			</View>
@@ -71,37 +71,36 @@ class CustomerList extends Component {
 					<Body>
 						<Text style={styles.title}>CUSTOMERS</Text>
 					</Body>
-					<Right>
-						{/* <TouchableOpacity>
-							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity> */}
-					</Right>
+					<Right />
 				</Header>
 				<View style={styles.searchView}>
 					<Item style={styles.searchForm} rounded>
-						<Input
-							placeholder="Search"
-						/>
+						<Input placeholder="Search" />
 						<Icon size={25} name="ios-search" />
 					</Item>
 				</View>
 				<Content style={styles.content}>
 					<FlatList
-						data={this.state.data}
+						data={this.props.customers}
 						keyExtractor={this.key}
-						renderItem={this.renderItems}
-					/>
+						renderItem={this.renderItems} />
 				</Content>
 			</Container>
 		)
 	}
 }
 
-const mapDispatchToProps = dispatch => {
-	return {
-		setNavigate: (link, data) => dispatch(setNavigate(link, data)),
-	}
-}
+const mapStateToProps = state => ({
+	sessionPersistance: state.sessionPersistance,
+	customers: state.customers,
+	pics: state.pics
+})
+
+const mapDispatchToProps = dispatch => ({
+	fetchCustomers: (id_branch, accessToken) => dispatch(fetchCustomers(id_branch, accessToken)),
+	setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+	fetchPics: (accessToken) => dispatch(fetchPics(accessToken))
+})
 
 const styles = StyleSheet.create({
 	header: {
@@ -169,4 +168,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default connect(null, mapDispatchToProps)(CustomerList)
+export default connect(mapStateToProps, mapDispatchToProps)(CustomerList)

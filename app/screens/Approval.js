@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, TouchableOpacity, View, Dimensions, FlatList } from 'react-native'
+import { StyleSheet, Alert, TouchableOpacity, View, Dimensions, FlatList } from 'react-native'
 import { Container,
 Content,
 Header,
@@ -18,43 +18,52 @@ Button,
 Form,
 Item,
 Input,
+Spinner,  
 Footer } from 'native-base'
+import moment from 'moment'
 import Icon from 'react-native-vector-icons/Ionicons'
 import PipelineProgress from '../components/PipelineProgress'
+import { connect } from 'react-redux'
+import { fetchQuestionWithStep } from '../actions/questions'
+import { fetchAnswer } from '../actions/answers'
+import { approvePipeline } from '../actions/pipelines'
 
 const { width, height } = Dimensions.get('window')
 
-export default class componentName extends Component {
-  constructor() {
-    super()
-
-    this.state={
-      data: [
-        {
-          question: 'Kriteria apa saja yang mereka butuhkan dari sebuah solusi ?'
-        },
-        {
-          question: 'Deskripsikan Aktivitas pada tahap ini?'
-        },
-      ]
+class Approval extends Component {
+  componentWillReceiveProps(props) {
+    if(props.success.condition === true && props.success.process_on === 'SUCCESS_APPROVE_PIPELINE') {
+      this.props.navigation.goBack()
     }
+  }
+
+  componentWillMount() {
+    const { params } = this.props.navigation.state
+    const { sessionPersistance } = this.props
+    this.props.fetchQuestionWithStep(params.step, sessionPersistance.accessToken)
+    this.props.fetchAnswer(params.id, params.id_pipeline, params.id_customer, params.step, sessionPersistance.accessToken)
+  }
+
+  handleApprove() {
+    const { params } = this.props.navigation.state
+    const { sessionPersistance } = this.props
+    Alert.alert(
+      'Approve pipeline',
+      'Are you sure approve this pipeline?',
+      [
+        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+        {text: 'OK', onPress: () => this.props.approvePipeline(params.id_pipeline, sessionPersistance.id_branch, params.id_customer, params.id, params.step, sessionPersistance.accessToken)},
+      ],
+      { cancelable: false }
+    )
   }
 
   key = (item,index) => index
 
-  renderItems = ({item}) => (
-    <View>
-      <H3 style={styles.question}>{item.question}</H3>
-      <Form>
-        <Item rounded disabled style={styles.answerBox}>
-          <Input multiline={true} value='Fotocopy, Print, Color, Scan, Email' style={styles.answer}/>
-        </Item>
-      </Form>
-    </View>
-  )
-
   render() {
+    const { params } = this.props.navigation.state
     const { navigate, goBack } = this.props.navigation
+    const { questionWithStep, answer, loading } = this.props
     return ( 
       <Container>
         <Header style={styles.header}>
@@ -81,8 +90,7 @@ export default class componentName extends Component {
             marginBottom: 15,
             padding: 20,
             justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+            alignItems: 'center'}}>
             <H3 style={styles.detailTitleText}>Pipeline Detail</H3>
             <Grid>
               <Col style={{flex: 0.2}}>
@@ -92,10 +100,10 @@ export default class componentName extends Component {
                 <Text style={styles.textDetail}>Month</Text>
               </Col>
               <Col style={{flex: 0.4}}>
-                <Text style={styles.textDetail}>: Fuji Xerox A-200 Super Fast</Text>
-                <Text style={styles.textDetail}>: PT Astra Graphia</Text>
-                <Text style={styles.textDetail}>: Tom Hardy</Text>
-                <Text style={styles.textDetail}>: January</Text>
+                <Text style={styles.textDetail}>: {params.pipeline}</Text>
+                <Text style={styles.textDetail}>: {params.customers[0].name}</Text>
+                <Text style={styles.textDetail}>: {params.pics[0].name}</Text>
+                <Text style={styles.textDetail}>: {moment(params.createdAt).format('MMMM')}</Text>
               </Col>
               <Col style={{flex: 0.2}}>
                 <Text style={styles.textDetail}>Revenue</Text>
@@ -112,30 +120,60 @@ export default class componentName extends Component {
             width: '100%', 
             minHeight: height / 1.5,
             marginBottom: 15,
-            padding: 20,
-          }}>
+            padding: 20}}>
             <H3 style={styles.detailTitleText}>Sales Activity</H3>
-            <View style={{
-              marginVertical: 40
-            }}>
-              <PipelineProgress />
+            <View style={{marginVertical: 40}}>
+              <PipelineProgress currentPosition={params.step-1} />
             </View>
-            <FlatList 
-              data={this.state.data}
-              keyExtractor={this.key}
-              renderItem={this.renderItems}
-            />
+            <View>
+              <H3 style={styles.question}>{questionWithStep.question}</H3>
+              <Form>
+                <Item rounded disabled style={styles.answerBox}>
+                  <Input disabled multiline={true} value={answer.answer} style={styles.answer}/>
+                </Item>
+              </Form>
+            </View>
+            <View>
+              <H3 style={styles.question}>Deskripsikan aktivitas pada tahap ini</H3>
+              <Form>
+                <Item rounded disabled style={styles.answerBox}>
+                  <Input disabled multiline={true} value={answer.activity_desc} style={styles.answer}/>
+                </Item>
+              </Form>
+            </View>
           </View>
         </Content>
-        <Footer style={styles.cardFooterCart}>
-					<Button full style={styles.cardButtonCart}>
-						<Text style={styles.approve}>APPROVE</Text>
-					</Button>
-				</Footer>
+        {loading.condition === true && loading.process_on === 'LOADING_APPROVE_PIPELINE' ? (
+          <Footer style={styles.cardFooterCart}>
+            <Button full style={[styles.cardButtonCart, {backgroundColor: '#999999'}]}>
+              <Spinner color='#FFFFFF' />
+            </Button>
+          </Footer>
+        ) : (
+          <Footer style={styles.cardFooterCart}>
+            <Button full style={styles.cardButtonCart} onPress={() => this.handleApprove()}>
+              <Text style={styles.approve}>APPROVE</Text>
+            </Button>
+          </Footer>
+        )}
       </Container>
     )
   }
 }
+
+const mapStateToProps = (state) => ({
+  loading: state.loading,
+  success: state.success,
+  answer: state.answer,
+  questionWithStep: state.questionWithStep,
+  sessionPersistance: state.sessionPersistance
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  approvePipeline: (id_pipeline, id_branch, id_customer, id, step, accessToken) => dispatch(approvePipeline(id_pipeline, id_branch, id_customer, id, step, accessToken)),
+  fetchAnswer: (id, id_pipeline, id_customer, step, accessToken) => dispatch(fetchAnswer(id, id_pipeline, id_customer, step, accessToken)),
+  fetchQuestionWithStep: (step, accessToken) => dispatch(fetchQuestionWithStep(step, accessToken))
+})
 
 const styles = StyleSheet.create({
   header: {
@@ -197,3 +235,4 @@ const styles = StyleSheet.create({
   }
 })
 
+export default connect(mapStateToProps, mapDispatchToProps)(Approval)

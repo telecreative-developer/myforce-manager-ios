@@ -18,6 +18,7 @@ import {
 } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import LinearGradient from 'react-native-linear-gradient'
+import defaultAvatar from '../assets/images/default-avatar.png'
 
 const HorizontalJoker = props => {
 	return (
@@ -26,14 +27,23 @@ const HorizontalJoker = props => {
 				colors={['#20E6CD', '#2D38F9']}
 				style={styles.linearGradient}>
 				<View style={styles.content}>
-					<Thumbnail source={{ uri: props.avatar }} />
+					{props.avatar === '' ? (
+						<Thumbnail source={defaultAvatar} />
+					) : (
+						<Thumbnail source={{ uri: props.avatar }} />
+					)}
 					<View style={styles.cardHeader}>
-						<H3 style={styles.textTitle}>{props.person}</H3>
+						<H3 style={styles.textTitle}>{props.name}</H3>
 						<View style={styles.viewLocation}>
-							<Text style={styles.textLocation}>{props.title}</Text>
+							<Text style={styles.textCompany} 
+							numberOfLines={1}
+							ellipsizeMode={'tail'}>{props.company}</Text>
 						</View>
 						<View style={styles.cardText}>
-							<Text style={styles.text}>{props.description}</Text>
+							<Text style={styles.text}>{props.pipeline}</Text>
+						</View>
+						<View style={styles.cardText}>
+							<Text style={styles.text}>Step {props.step}</Text>
 						</View>
 					</View>
 				</View>
@@ -70,6 +80,10 @@ const styles = StyleSheet.create({
 	textLocation: {
 		color: '#ffffff',
 	},
+	textCompany: {
+		color: '#ffffff',
+		maxWidth: 200
+	},
 	text: {
 		color: '#ffffff',
 		fontSize: 10,
@@ -95,17 +109,5 @@ const styles = StyleSheet.create({
 		justifyContent: 'center'
 	}
 })
-
-HorizontalJoker.propTypes = {
-	title: PropTypes.string,
-	data: PropTypes.array,
-	key: PropTypes.string,
-	items: PropTypes.node,
-	horizontalIndicator: PropTypes.bool
-}
-
-HorizontalJoker.defaultProps = {
-	horizontalIndicator: false
-}
 
 export default HorizontalJoker

@@ -38,6 +38,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
+import { fetchPipelines, fetchPipelinesWithIdCustomer } from '../actions/pipelines'
+import { fetchPicsWithIDCustomer } from '../actions/pics'
 import PipelineProgress from '../components/PipelineProgress'
 
 const { height, width } = Dimensions.get('window')
@@ -47,10 +49,6 @@ class CustomerProfile extends Component {
 		super()
 
 		this.state = {
-			id_pic: '',
-			isModalVisible: false,
-			modalNewPipeline: false,
-			modalPic: false,
 			pipelineTabs: 'active',
 			pipeline: '',
 			id_pipeline: '',
@@ -58,191 +56,194 @@ class CustomerProfile extends Component {
 		}
 	}
 
-	// renderPipelineTabs() {
-	// 	if (this.state.pipelineTabs === 'active') {
-	// 		return (
-	// 			<View>
-	// 				<FlatList
-	// 					data={this.props.pipelines.filter(p => p.step !== 7 && p.lose === false)}
-	// 					keyExtractor={this.key}
-	// 					renderItem={this.renderItemsActive} />
-	// 			</View>
-	// 		)
-	// 	} else if (this.state.pipelineTabs === 'close') {
-	// 		return (
-  //       <View>
-	// 			<FlatList
-	// 				data={this.props.pipelines.filter(p => p.step === 7 && p.lose === false)}
-	// 				keyExtractor={this.key}
-	// 				renderItem={this.renderItemsClose} />
-  //       </View>
-	// 		)
-	// 	} else if (this.state.pipelineTabs === 'lose') {
-	// 		return (
-  //       <View>
-  //         <FlatList
-  //           data={this.props.pipelines.filter(p => p.lose === true)}
-  //           keyExtractor={this.key}
-  //           renderItem={this.renderItemsLose} />
-  //       </View>
-	// 		)
-	// 	}
-	// }
+	async componentWillMount() {
+		await this.props.fetchPipelinesWithIdCustomer(
+			this.props.navigation.state.params.id_customer,
+			this.props.sessionPersistance.accessToken
+		)
+		await this.props.fetchPicsWithIDCustomer(
+			this.props.navigation.state.params.id_customer,
+			this.props.sessionPersistance.accessToken
+		)
+	}
 
-	// key = (item, index) => index
+	renderPipelineTabs() {
+		if (this.state.pipelineTabs === 'active') {
+			return (
+				<View>
+					<FlatList
+						data={this.props.pipelinesWithIdCustomer.filter(p => p.step !== 7 && p.lose === false)}
+						keyExtractor={this.key}
+						renderItem={this.renderItemsActive} />
+				</View>
+			)
+		} else if (this.state.pipelineTabs === 'close') {
+			return (
+        <View>
+					<FlatList
+						data={this.props.pipelinesWithIdCustomer.filter(p => p.step === 7 && p.lose === false)}
+						keyExtractor={this.key}
+						renderItem={this.renderItemsClose} />
+        </View>
+			)
+		} else if (this.state.pipelineTabs === 'lose') {
+			return (
+        <View>
+          <FlatList
+            data={this.props.pipelinesWithIdCustomer.filter(p => p.lose === true)}
+            keyExtractor={this.key}
+            renderItem={this.renderItemsLose} />
+        </View>
+			)
+		}
+	}
+
+	key = (item, index) => index
 
 	handleBackButton() {
+		this.props.setNavigate()
 		this.props.navigation.goBack()
 	}
 
-	// handleSetStep(step, id_pipeline) {
-	// 	this.setState({isModalVisible: true, step, id_pipeline})
-	// }
+	renderTextSellingProccess() {
+		const { step } = this.state
+		if(step === 1) {
+			return (
+				<View>
+					<Text style={styles.step}>STEP 1</Text>
+					<Text style={styles.titleModal}>Identify Opportunities</Text>
+				</View>
+			)
+		}else if(step === 2) {
+			return (
+				<View>
+					<Text style={styles.step}>STEP 2</Text>
+					<Text style={styles.titleModal}>Clarify Needs</Text>
+				</View>
+			)
+		}else if(step === 3) {
+			return (
+				<View>
+					<Text style={styles.step}>STEP 3</Text>
+					<Text style={styles.titleModal}>IDENTIFY OPPORTUNITIES</Text>
+				</View>
+			)
+		}else if(step === 4) {
+			return (
+				<View>
+					<Text style={styles.step}>STEP 4</Text>
+					<Text style={styles.titleModal}>Develop Criteria</Text>
+				</View>
+			)
+		}else if(step === 5) {
+			return (
+				<View>
+					<Text style={styles.step}>STEP 5</Text>
+					<Text style={styles.titleModal}>Gain Commitment</Text>
+				</View>
+			)
+		}else if(step === 6) {
+			return (
+				<View>
+					<Text style={styles.step}>STEP 6</Text>
+					<Text style={styles.titleModal}>Manage Implementation</Text>
+				</View>
+			)
+		}
+	}
 
-	// confirmToNextStep() {
-	// 	this.setState({ isModalVisible: false })
-	// 	this.props.navigation.navigate('Stepper', {step: this.state.step, id_pipeline: this.state.id_pipeline, id_customer: this.props.navigation.state.params.id_customer})
-	// }
+	renderItemsActive = ({ item }) => (
+		<View style={styles.customerPipeline}>
+			<View style={styles.pipelineContent}>
+				<View style={styles.leftPipeline}>
+					<View style={styles.pipelineTitleDirection}>
+						<View style={styles.titleFlex}>
+							<H2>{item.pipeline}</H2>
+						</View>
+						<View style={styles.badgeFlex}>
+							{item.step_process && (
+								<Badge style={styles.pipelineBadgeNew}>
+									<Text>In progress</Text>
+								</Badge>
+							)}
+						</View>
+					</View>
+					<View style={styles.picDirection}>
+						{item.pics.map((data, index) => (
+							<Text key={index} style={styles.data}>{data.name}</Text>
+						))}
+					</View>
+				</View>
+				<View>
+					{this.props.sessionPersistance.id === this.props.navigation.state.params.id ? (
+						<PipelineProgress
+							onPress={() => this.handleCheckStepper(item.step, item.id_pipeline, item.step_process)}
+							currentPosition={item.step-1} />
+					) : (
+						<PipelineProgress currentPosition={item.step-1} />
+					)}
+				</View>
+			</View>
+		</View>
+	)
 
-	// renderTextSellingProccess() {
-	// 	const { step } = this.state
-	// 	if(step === 1) {
-	// 		return (
-	// 			<View>
-	// 				<Text style={styles.step}>STEP 1</Text>
-	// 				<Text style={styles.titleModal}>Identify Opportunities</Text>
-	// 			</View>
-	// 		)
-	// 	}else if(step === 2) {
-	// 		return (
-	// 			<View>
-	// 				<Text style={styles.step}>STEP 2</Text>
-	// 				<Text style={styles.titleModal}>Clarify Needs</Text>
-	// 			</View>
-	// 		)
-	// 	}else if(step === 3) {
-	// 		return (
-	// 			<View>
-	// 				<Text style={styles.step}>STEP 3</Text>
-	// 				<Text style={styles.titleModal}>IDENTIFY OPPORTUNITIES</Text>
-	// 			</View>
-	// 		)
-	// 	}else if(step === 4) {
-	// 		return (
-	// 			<View>
-	// 				<Text style={styles.step}>STEP 4</Text>
-	// 				<Text style={styles.titleModal}>Develop Criteria</Text>
-	// 			</View>
-	// 		)
-	// 	}else if(step === 5) {
-	// 		return (
-	// 			<View>
-	// 				<Text style={styles.step}>STEP 5</Text>
-	// 				<Text style={styles.titleModal}>Gain Commitment</Text>
-	// 			</View>
-	// 		)
-	// 	}else if(step === 6) {
-	// 		return (
-	// 			<View>
-	// 				<Text style={styles.step}>STEP 6</Text>
-	// 				<Text style={styles.titleModal}>Manage Implementation</Text>
-	// 			</View>
-	// 		)
-	// 	}
-	// }
+	renderItemsClose = ({ item }) => (
+		<View style={styles.customerPipeline}>
+			<View style={styles.pipelineContent}>
+				<View style={styles.leftPipeline}>
+					<View style={styles.pipelineTitleDirection}>
+						<View style={styles.titleFlex}>
+							<H2>{item.pipeline}</H2>
+						</View>
+						<View style={styles.badgeFlex}>
+							{item.step_process && (
+								<Badge style={styles.pipelineBadgeNew}>
+									<Text>In progress</Text>
+								</Badge>
+							)}
+						</View>
+					</View>
+					<View style={styles.picDirection}>
+						{item.pics.map((data, index) => (
+							<Text key={index} style={styles.data}>{data.name}</Text>
+						))}
+					</View>
+				</View>
+				<View>
+					<PipelineProgress currentPosition={item.step-1} />
+				</View>
+			</View>
+		</View>
+	)
 
-	// renderItemsActive = ({ item }) => (
-	// 	<View style={styles.customerPipeline}>
-	// 		<View style={styles.pipelineContent}>
-	// 			<View style={styles.leftPipeline}>
-	// 				<View style={styles.pipelineTitleDirection}>
-	// 					<View style={styles.titleFlex}>
-	// 						<H2>{item.pipeline}</H2>
-	// 					</View>
-	// 					<View style={styles.badgeFlex}>
-	// 						{item.step_process && (
-	// 							<Badge style={styles.pipelineBadgeNew}>
-	// 								<Text>In progress</Text>
-	// 							</Badge>
-	// 						)}
-	// 					</View>
-	// 				</View>
-	// 				<View style={styles.picDirection}>
-	// 					{item.pics.map((data, index) => (
-	// 						<Text key={index} style={styles.data}>{data.name}</Text>
-	// 					))}
-	// 				</View>
-	// 			</View>
-	// 			<View>
-	// 				{this.props.sessionPersistance.id === this.props.navigation.state.params.id ? (
-	// 					<PipelineProgress
-	// 						onPress={() => this.handleCheckStepper(item.step, item.id_pipeline, item.step_process)}
-	// 						currentPosition={item.step-1} />
-	// 				) : (
-	// 					<PipelineProgress currentPosition={item.step-1} />
-	// 				)}
-	// 			</View>
-	// 		</View>
-	// 	</View>
-	// )
-
-	// renderItemsClose = ({ item }) => (
-	// 	<View style={styles.customerPipeline}>
-	// 		<View style={styles.pipelineContent}>
-	// 			<View style={styles.leftPipeline}>
-	// 				<View style={styles.pipelineTitleDirection}>
-	// 					<View style={styles.titleFlex}>
-	// 						<H2>{item.pipeline}</H2>
-	// 					</View>
-	// 					<View style={styles.badgeFlex}>
-	// 						{item.step_process && (
-	// 							<Badge style={styles.pipelineBadgeNew}>
-	// 								<Text>In progress</Text>
-	// 							</Badge>
-	// 						)}
-	// 					</View>
-	// 				</View>
-	// 				<View style={styles.picDirection}>
-	// 					{item.pics.map((data, index) => (
-	// 						<Text key={index} style={styles.data}>{data.name}</Text>
-	// 					))}
-	// 				</View>
-	// 			</View>
-	// 			<View>
-	// 				<PipelineProgress currentPosition={item.step-1} />
-	// 			</View>
-	// 		</View>
-	// 	</View>
-	// )
-
-	// renderItemsLose = ({ item }) => (
-	// 	<View style={styles.customerPipeline}>
-	// 		<View style={styles.pipelineContent}>
-	// 			<View style={styles.leftPipeline}>
-	// 				<View style={styles.pipelineTitleDirection}>
-	// 					<View style={styles.titleFlex}>
-	// 						<H2>{item.pipeline}</H2>
-	// 					</View>
-	// 					<View style={styles.badgeFlex}>
-	// 						{item.step_process && (
-	// 							<Badge style={styles.pipelineBadgeNew}>
-	// 								<Text>In progress</Text>
-	// 							</Badge>
-	// 						)}
-	// 					</View>
-	// 				</View>
-	// 				<View style={styles.picDirection}>
-	// 					{item.pics.map((data, index) => (
-	// 						<Text key={index} style={styles.data}>{data.name}</Text>
-	// 					))}
-	// 				</View>
-	// 			</View>
-	// 			<View>
-	// 				<PipelineProgress currentPosition={item.step-1} />
-	// 			</View>
-	// 		</View>
-	// 	</View>
-	// )
+	renderItemsLose = ({ item }) => (
+		<View style={styles.customerPipeline}>
+			<View style={styles.pipelineContent}>
+				<View style={styles.leftPipeline}>
+					<View style={styles.pipelineTitleDirection}>
+						<View style={styles.titleFlex}>
+							<H2>{item.pipeline}</H2>
+						</View>
+						<View style={styles.badgeFlex}>
+							{item.step_process && (
+								<Badge style={styles.pipelineBadgeNew}>
+									<Text>In progress</Text>
+								</Badge>
+							)}
+						</View>
+					</View>
+					<View style={styles.picDirection}>
+						{item.pics.map((data, index) => (
+							<Text key={index} style={styles.data}>{data.name}</Text>
+						))}
+					</View>
+				</View>
+				<View>
+					<PipelineProgress currentPosition={item.step-1} />
+				</View>
+			</View>
+		</View>
+	)
 
 	renderItemsPic = ({ item }) => (
 		<TouchableOpacity style={styles.headerDirection}>
@@ -253,57 +254,9 @@ class CustomerProfile extends Component {
 
 	render() {
 		const { navigate, goBack, state } = this.props.navigation
+		const { params } = this.props.navigation.state
 		return (
 			<Container>
-				<Modal isVisible={this.state.modalPic}>
-					<View style={styles.modalWrapperAddPipeline}>
-						<View style={styles.imageModal}>
-							<Text style={styles.pipelineModalText}>PIC INFO</Text>
-						</View>
-						<Content>
-							<View style={styles.formPicDirection}>
-								<Form>
-									<Item floatingLabel>
-										<Label>PIC Name</Label>
-										<Input value="Rizaldi Halim" />
-									</Item>
-									<Item floatingLabel>
-										<Label>Job</Label>
-										<Input value="Branch Manager" />
-									</Item>
-									<Item floatingLabel>
-										<Label>Phone Number</Label>
-										<Input value="+62 859 8006 4003" />
-									</Item>
-									<Item floatingLabel>
-										<Label>Email</Label>
-										<Input value="nando@gmail.com" />
-									</Item>
-									<Item floatingLabel>
-										<Label>Address</Label>
-										<Input
-											multiline={true}
-											value="JL. Pegangsaan 2, Jakarta Utara"
-											style={styles.picAddress}
-										/>
-									</Item>
-								</Form>
-							</View>
-						</Content>
-						<Footer>
-							<FooterTab>
-								<Button onPress={() => this.setState({ modalPic: false })}>
-									<Text note style={styles.modalCancelButton}>
-										Cancel
-									</Text>
-								</Button>
-								<Button onPress={() => this.setState({ modalPic: false })}>
-									<Text style={styles.modalYesButton}>Save Changes</Text>
-								</Button>
-							</FooterTab>
-						</Footer>
-					</View>
-				</Modal>
 				<Header style={styles.header}>
 					<Left style={{ flexDirection: 'row' }}>
 						<Button transparent onPress={() => this.handleBackButton()}>
@@ -314,67 +267,24 @@ class CustomerProfile extends Component {
 					<Body>
 						<Text style={styles.title}>CUSTOMER PROFILE</Text>
 					</Body>
-					<Right>
-						{/* <TouchableOpacity onPress={() => navigate('OrderSummary')}>
-							<Icon name="ios-folder-open" size={25} />
-						</TouchableOpacity> */}
-					</Right>
+					<Right />
 				</Header>
-				{/* <View style={styles.newsWrapper}>
-					<View style={styles.newsDirection}>
-						<View style={styles.titleFlex}>
-							<H3 style={styles.newsTitle}>Latest News</H3>
-						</View>
-						<TouchableOpacity
-							style={styles.iconFlex}
-							onPress={() => navigate('OrderSummary')}>
-							<Icon
-								style={styles.closeIcon}
-								name="ios-close-circle-outline"
-								size={20}
-								color={'#ffffff'}
-							/>
-						</TouchableOpacity>
-					</View>
-					<View>
-						<Text style={styles.newsText}>
-							Lorem Ipsum is simply dummy text of the printing and typesetting
-							industry. Lorem Ipsum has been the industry's standard dummy text
-							ever since the 1500s. when an unknown printer took a galley of
-							type and scrambled it.
-						</Text>
-						<TouchableOpacity>
-							<Text style={styles.readMore}>Read More</Text>
-						</TouchableOpacity>
-					</View>
-				</View> */}
 				<Content style={styles.content} showsVerticalScrollIndicator={false}>
 					<View style={styles.customerHeader}>
 						<View style={styles.headerDirectionTitle}>
 							<View>
 								<TouchableHighlight underlayColor={'transparent'}>
-									<H3 style={styles.headerDirectionTitle}>
-										PT Astra Graphia
-									</H3>
+									<H3 style={styles.headerDirectionTitle}>{params.name}</H3>
 								</TouchableHighlight>
 								<View style={styles.headerDirection}>
 									<Icon name="md-pin" size={15} />
-									<Text style={styles.dataAddress}>
-										Jl. Lorem Ipsum
-									</Text>
+									<Text style={styles.dataAddress}>{params.address}</Text>
 								</View>
 								<Text style={{fontSize: 12, paddingTop: 15, paddingLeft: 20 }}>PIC List:</Text>
-								{/* <FlatList 
+								<FlatList 
 									data={this.props.picsCustomers}
 									keyExtractor={this.key}
-									renderItem={this.renderItemsPic}
-								/> */}
-								{/* <TouchableOpacity
-									style={styles.headerDirection}
-									onPress={() => navigate('ChoosePic')}>
-									<Icon name="md-add" size={15} color={'#2D38F9'}/>
-									<Text style={styles.dataAddPic}>Add More PIC</Text>
-								</TouchableOpacity> */}
+									renderItem={this.renderItemsPic} />
 							</View>
 						</View>
 					</View>
@@ -383,38 +293,56 @@ class CustomerProfile extends Component {
 							<Col>
 								<TouchableOpacity
 									onPress={() => this.setState({ pipelineTabs: 'active' })}>
-									<H1 style={styles.totalText}>0</H1>
+									<H1 style={styles.totalText}>
+										{JSON.stringify(
+											this.props.pipelinesWithIdCustomer.filter(p => p.step !== 7).length
+										)}
+									</H1>
 									<Text style={styles.totalText}>ACTIVE</Text>
 								</TouchableOpacity>
 							</Col>
 							<Col>
 								<TouchableOpacity
 									onPress={() => this.setState({ pipelineTabs: 'close' })}>
-									<H1 style={styles.totalText}>0</H1>
+									<H1 style={styles.totalText}>
+									{JSON.stringify(
+										this.props.pipelinesWithIdCustomer.filter(p => p.step === 7 && p.lose === false).length
+									)}
+									</H1>
 									<Text style={styles.totalText}>CLOSE</Text>
 								</TouchableOpacity>
 							</Col>
 							<Col>
 								<TouchableOpacity
 									onPress={() => this.setState({ pipelineTabs: 'lose' })}>
-									<H1 style={styles.totalText}>0</H1>
+									<H1 style={styles.totalText}>
+									{JSON.stringify(
+										this.props.pipelinesWithIdCustomer.filter(p => p.lose === true).length
+									)}
+									</H1>
 									<Text style={styles.totalText}>LOSE</Text>
 								</TouchableOpacity>
 							</Col>
 						</Grid>
 					</View>
-					{/* {this.renderPipelineTabs()} */}
+					{this.renderPipelineTabs()}
 				</Content>
 			</Container>
 		)
 	}
 }
 
-const mapDispatchToProps = dispatch => {
-	return {
-		setNavigate: (link, data) => dispatch(setNavigate(link, data)),
-	}
-}
+const mapStateToProps = state => ({
+	pipelinesWithIdCustomer: state.pipelinesWithIdCustomer,
+	sessionPersistance: state.sessionPersistance,
+	picsCustomers: state.picsCustomers
+})
+
+const mapDispatchToProps = dispatch => ({
+	fetchPipelinesWithIdCustomer: (id_customer, accessToken) => dispatch(fetchPipelinesWithIdCustomer(id_customer, accessToken)),
+	setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+	fetchPicsWithIDCustomer: (id_customer, accessToken) => dispatch(fetchPicsWithIDCustomer(id_customer, accessToken))
+})
 
 const styles = StyleSheet.create({
 	productCategoryView: {
@@ -674,4 +602,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default connect(null, mapDispatchToProps)(CustomerProfile)
+export default connect(mapStateToProps, mapDispatchToProps)(CustomerProfile)

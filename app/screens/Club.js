@@ -26,46 +26,21 @@ import {
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/Ionicons'
 import LinearGradient from 'react-native-linear-gradient'
+import { connect } from 'react-redux'
 import HorizontalJoker from '../components/HorizontalJokerTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
+import { setNavigate } from '../actions/processor'
+import { fetchTeamUpdatesWithBranch } from '../actions/updates'
+import { fetchPoints } from '../actions/points'
 
 const { height, width } = Dimensions.get('window')
 
 class Club extends Component {
-	constructor() {
-		super()
 
-		this.state = {
-			isModalVisible: false,
-			dataJoker: [
-				{
-					title: 'PT Astra Graphia',
-					person: 'M. Ridho',
-					description: '0RS-05-33D-Xerox',
-					avatar:
-						'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv7w-iiNlrMPb2rAFRiPxpTsD6ab9rj7SdbVNv2jqyx-ces0xb'
-				},
-				{
-					title: 'PT Tele Digital Kreatif',
-					person: 'Muhammad Fuadit',
-					description: '0RS-05-33D-Xerox',
-					avatar:
-						'https://media.licdn.com/media-proxy/ext?w=800&h=800&hash=iNhNmsHQG4hyGxyWFupYOY2%2FzJ8%3D&ora=1%2CaFBCTXdkRmpGL2lvQUFBPQ%2CxAVta5g-0R6nlh8Tw1Ek-L7T40O550NJC4HTDy_8DnHzq8jAIiihMNiKMfau41AUfikIhlw_fe2rQia3H82qc9usJdFyi8-sLcu1NhMcUU8A3Wxb2_QuFTMdkZanCbO1MwoI3f5ZMH74YZroQXAcPh0z9t6EPaD0e1EH6GOqb-jQXJ5mRpZU5IAPxBMFlZvVGNII_d1iw2E_41uM7p_jY20957CYBAKKJVsdBkbKKuZW6pu__Aa8wnvMrWb5iKeHXZirMIgXmlCk1s6KckrQ3ktivG4lyyFNg95KE1iA2NlN6W_nDeZfRQ'
-				},
-				{
-					title: 'PT Paris Saint Germain',
-					person: 'Ibrahimovic',
-					description: '0RS-05-33D-Xerox',
-					avatar: 'https://i.imgur.com/vD2bqrih.jpg'
-				},
-				{
-					title: 'PT Paris Saint Germain',
-					person: 'Ibrahimovic',
-					description: '0RS-05-33D-Xerox',
-					avatar: 'https://i.imgur.com/vD2bqrih.jpg'
-				}
-			]
-		}
+	componentWillMount() {
+		const { sessionPersistance } = this.props
+		this.props.fetchTeamUpdatesWithBranch(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		this.props.fetchPoints(sessionPersistance.accessToken)
 	}
 
 	key = (item, index) => index
@@ -73,15 +48,45 @@ class Club extends Component {
 	renderItems = ({ item }) => (
 		<TouchableOpacity>
 			<HorizontalJoker
-				title={item.title}
-				person={item.person}
-				description={item.description}
-				avatar={item.avatar}
-			/>
+				name={item.users[0].first_name}
+				company={item.customers[0].name}
+				pipeline={item.pipelines[0].pipeline}
+				avatar={item.users[0].avatar}
+				step={item.pipelines[0].step} />
 		</TouchableOpacity>
-  )
+	)
+	
+	renderItemsRank = ({item, index}) => (
+		<View
+			style={{
+				display: 'flex',
+				flexDirection: 'row',
+				marginTop: 30,
+				alignItems: 'center'
+			}}>
+			<Text style={{ fontSize: 16, fontWeight: 'bold', marginRight: 15 }}>
+				{index + 1}
+			</Text>
+			{item.users[0].avatar === '' ? (
+				<Thumbnail small source={defaultAvatar} style={{ marginRight: 10 }} />
+			) : (
+				<Thumbnail
+					small
+					source={{ uri: item.users[0].avatar }}
+					style={{ marginRight: 10 }}
+				/>
+			)}
+			<View>
+				<Text style={{ fontSize: 16, fontWeight: 'bold' }}>{`${item.users[0].first_name} ${item.users[0].last_name}`}</Text>
+				<Text style={{ fontSize: 14 }}>
+					{JSON.stringify(item.point)} Points
+				</Text>
+			</View>
+		</View>
+	)
   
 	render() {
+		const { sessionPersistance } = this.props
 		return (
 			<Container>
 				<Header style={styles.header}>
@@ -89,11 +94,7 @@ class Club extends Component {
 					<Body>
 						<Text style={styles.title}>AG CLUB</Text>
 					</Body>
-					<Right>
-						{/* <TouchableOpacity>
-							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity> */}
-					</Right>
+					<Right />
 				</Header>
 				<View style={styles.customerHeader}>
 					<LinearGradient
@@ -102,14 +103,21 @@ class Club extends Component {
 						<Grid>
 							<Col style={styles.leftCol}>
 								<View style={styles.headerDirectionData}>
-									<Thumbnail rounded large source={defaultAvatar} />
+									{this.props.sessionPersistance.avatar === '' ? (
+										<Thumbnail rounded large source={defaultAvatar} />
+									) : (
+										<Thumbnail
+											rounded
+											large
+											source={{uri: this.props.sessionPersistance.avatar}} />
+									)}
 									<View>
 										<TouchableOpacity>
-											<H3 style={styles.profileName}>Nando Reza Pratama</H3>
+											<H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
 										</TouchableOpacity>
 										<View style={styles.headerDirection}>
-											<Text style={styles.Data}>20 Pipeline Created</Text>
-										</View>
+                      <Text style={styles.data}>Branch Manager - {sessionPersistance.branch}</Text>
+                    </View>
 									</View>
 								</View>
 							</Col>
@@ -124,21 +132,19 @@ class Club extends Component {
 					<View style={styles.boardDirection}>
 						<View style={styles.leaderboard}>
 							<Text style={styles.leaderboardTitle}>
-								Jakarta-1 Leaderboard
+								{sessionPersistance.branch} - Leaderboard
 							</Text>
-							{/* <FlatList
-								data={this.state.data}
+							<FlatList
+								data={this.props.points.filter(d => d.id_branch === sessionPersistance.id_branch).sort((a, b) => a.point - b.point).slice(0, 5).reverse()}
 								keyExtractor={this.key}
-								renderItem={this.renderItemUsers}
-							/> */}
+								renderItem={this.renderItemsRank} />
 						</View>
 						<View style={styles.leaderboard}>
 							<Text style={styles.leaderboardTitle}>National Leaderboard</Text>
-							{/* <FlatList
-								data={this.props.users.slice(0, 5)}
+							<FlatList
+								data={this.props.points.sort((a, b) => a.point - b.point).slice(0, 5).reverse()}
 								keyExtractor={this.key}
-								renderItem={this.renderItemUsers}
-							/> */}
+								renderItem={this.renderItemsRank} />
 						</View>
 					</View>
 					<View style={styles.team}>
@@ -146,16 +152,27 @@ class Club extends Component {
 						<FlatList
 							horizontal={true}
 							showsHorizontalScrollIndicator={false}
-							data={this.state.dataJoker}
+							data={this.props.teamUpdatesWithBranch}
 							keyExtractor={this.key}
-							renderItem={this.renderItems}
-						/>
+							renderItem={this.renderItems} />
 					</View>
 				</View>
 			</Container>
 		)
 	}
 }
+
+const mapStateToProps = state => ({
+	teamUpdatesWithBranch: state.teamUpdatesWithBranch,
+	sessionPersistance: state.sessionPersistance,
+	points: state.points
+})
+
+const mapDispatchToProps = dispatch => ({
+	setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+	fetchPoints: (accessToken) => dispatch(fetchPoints(accessToken)),
+	fetchTeamUpdatesWithBranch: (id_branch, accessToken) => dispatch(fetchTeamUpdatesWithBranch(id_branch, accessToken)),
+})
 
 const styles = StyleSheet.create({
 	header: {
@@ -271,4 +288,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Club
+export default connect(mapStateToProps, mapDispatchToProps)(Club)

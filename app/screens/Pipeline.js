@@ -24,6 +24,7 @@ import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
+import { fetchPipelines } from '../actions/pipelines'
 
 const { width, height } = Dimensions.get('window')
 
@@ -32,45 +33,70 @@ class Pipeline extends Component {
 		super()
 
 		this.state = {
-      search: '',
-      data: [
-        {
-          salesName: 'Nando Reza Pratama',
-          pipelineTitle: 'Fuji Xerox A-200 Super Fast',
-          customer: 'PT Astra Graphia',
-          pipelineStep: 'Identify Opportunity'
-        },
-        {
-          salesName: 'Kevin Hermawan',
-          pipelineTitle: 'Fuji Xerox A-200 Super Fast',
-          customer: 'PT Astra Graphia',
-          pipelineStep: 'Identify Opportunity'
-        },        {
-          salesName: 'Rendi Simamora',
-          pipelineTitle: 'Fuji Xerox A-200 Super Fast',
-          customer: 'PT Astra Graphia',
-          pipelineStep: 'Identify Opportunity'
-        }
-      ]
+      search: ''
+		}
+	}
+
+	componentWillMount() {
+		const { sessionPersistance } = this.props
+		this.props.fetchPipelines(sessionPersistance.id_branch, sessionPersistance.accessToken)
+	}
+
+	renderBadges(item) {
+		if(item.step === 1) {
+			return <Text>Identify Opportunities</Text>
+		}else if(item.step === 2) {
+			return <Text>Clarify Needs</Text>
+		}else if(item.step === 3) {
+			return <Text>Develop Criteria</Text>
+		}else if(item.step === 4) {
+			return <Text>Recommend a Solution</Text>
+		}else if(item.step === 5) {
+			return <Text>Gain Commitment</Text>
+		}else if(item.step === 6) {
+			return <Text>Manage Implementation</Text>
 		}
 	}
 
   key = (item,index) => index
 
-  renderItems = ({item}) => (
+  renderItemsRequest = ({item}) => (
     <View style={styles.customerPipeline}>
       <View style={styles.pipelineContent}>
         <Grid style={styles.grid}>
           <Col style={styles.leftPipeline}>
-            <H2>{item.salesName}</H2>
-            <Text style={styles.contentText}>{item.pipelineTitle}</Text>
-            <Text>{item.customer}</Text>
+            <H2>{`${item.users[0].first_name} ${item.users[0].last_name}`}</H2>
+            <Text style={styles.contentText}>{item.pipeline}</Text>
+            <Text>{item.customers[0].name}</Text>
           </Col>
           <Col style={styles.rightPipeline}>
             <Badge style={styles.badge}>
-              <Text>Identify Needs</Text>
+              {this.renderBadges(item)}
             </Badge>
-            <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', '')}>
+            <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', item)}>
+              <Text style={styles.viewText}>View</Text>
+              <Icon name="ios-arrow-forward" size={18} />
+            </TouchableOpacity>
+          </Col>
+        </Grid>
+      </View>
+    </View>
+	)
+	
+	renderItemsApprove = ({item}) => (
+    <View style={styles.customerPipeline}>
+      <View style={styles.pipelineContent}>
+        <Grid style={styles.grid}>
+          <Col style={styles.leftPipeline}>
+            <H2>{`${item.users[0].first_name} ${item.users[0].last_name}`}</H2>
+            <Text style={styles.contentText}>{item.pipeline}</Text>
+            <Text>{item.customers[0].name}</Text>
+          </Col>
+          <Col style={styles.rightPipeline}>
+            <Badge style={styles.badge}>
+              <Text>Done</Text>
+            </Badge>
+            <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', item)}>
               <Text style={styles.viewText}>View</Text>
               <Icon name="ios-arrow-forward" size={18} />
             </TouchableOpacity>
@@ -83,14 +109,14 @@ class Pipeline extends Component {
 	render() {
 		return (
 			<Container>
-				<Header style={styles.header}>
+				<Header hasTabs style={styles.header}>
 					<Left>
 						<TouchableOpacity>
 							<Thumbnail rounded small source={defaultAvatar} />
 						</TouchableOpacity>
 					</Left>
 					<Body>
-						<Text style={styles.title}>CUSTOMERS</Text>
+						<Text style={styles.title}>TEAM ACTIVITY</Text>
 					</Body>
 					<Right>
 						{/* <TouchableOpacity>
@@ -102,33 +128,29 @@ class Pipeline extends Component {
 					<Tab heading="PIPELINE REQUEST" style={{backgroundColor: 'transparent'}}>
 						<View style={styles.searchView}>
 							<Item style={styles.searchForm} rounded>
-								<Input
-									placeholder="Search"
-								/>
+								<Input placeholder="Search" />
 								<Icon size={25} name="ios-search" />
 							</Item>
 						</View>
 						<View style={styles.flatListView}>
 							<FlatList 
-							data={this.state.data}
-							keyExtractor={this.key}
-							renderItem={this.renderItems} />
+								data={this.props.pipelines.filter(data => data.step_process === true)}
+								keyExtractor={this.key}
+								renderItem={this.renderItemsRequest} />
 						</View>
 					</Tab>
 					<Tab heading="APPROVED PIPELINE" style={{backgroundColor: 'transparent'}}>
 						<View style={styles.searchView}>
 							<Item style={styles.searchForm} rounded>
-								<Input
-									placeholder="Search"
-								/>
+								<Input placeholder="Search" />
 								<Icon size={25} name="ios-search" />
 							</Item>
 						</View>
 						<View style={styles.flatListView}>
 							<FlatList 
-							data={this.state.data}
-							keyExtractor={this.key}
-							renderItem={this.renderItems} />
+								data={this.props.pipelines.filter(data => data.step === 7 && data.step_process === false)}
+								keyExtractor={this.key}
+								renderItem={this.renderItemsApprove} />
 						</View>
 					</Tab>
 				</Tabs>
@@ -137,7 +159,13 @@ class Pipeline extends Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	pipelines: state.pipelines,
+	sessionPersistance: state.sessionPersistance
+})
+
 const mapDispatchToProps = (dispatch) => ({
+	fetchPipelines: (id_branch, accessToken) => dispatch(fetchPipelines(id_branch, accessToken)),
   setNavigate: (link, data) => dispatch(setNavigate(link, data)),
 })
 
@@ -214,4 +242,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default connect(null,mapDispatchToProps)(Pipeline)
+export default connect(mapStateToProps,mapDispatchToProps)(Pipeline)
