@@ -125,7 +125,7 @@ class Approval extends Component {
             padding: 20}}>
             <H3 style={styles.detailTitleTextActivity}>Sales Activity</H3>
             <View style={{marginVertical: 40}}>
-              <PipelineProgress currentPosition={params.step-1} />
+              <PipelineProgress currentPosition={params.step} />
             </View>
             <View>
               <H3 style={styles.question}>{questionWithStep.question}</H3>
