@@ -27,6 +27,7 @@ import { connect } from 'react-redux'
 import { fetchQuestionWithStep } from '../actions/questions'
 import { fetchAnswer } from '../actions/answers'
 import { approvePipeline } from '../actions/pipelines'
+import LinearGradient from 'react-native-linear-gradient'
 
 const { width, height } = Dimensions.get('window')
 
@@ -86,34 +87,35 @@ class Approval extends Component {
           <View style={{
             backgroundColor: '#ffffff', 
             width: '100%', 
-            height: height / 5,
-            marginBottom: 15,
-            padding: 20,
-            justifyContent: 'center',
-            alignItems: 'center'}}>
-            <H3 style={styles.detailTitleText}>Pipeline Detail</H3>
-            <Grid>
-              <Col style={{flex: 0.2}}>
-                <Text style={styles.textDetail}>Pipeline Name</Text>
-                <Text style={styles.textDetail}>Customer Name</Text>
-                <Text style={styles.textDetail}>PIC</Text>
-                <Text style={styles.textDetail}>Month</Text>
-              </Col>
-              <Col style={{flex: 0.4}}>
-                <Text style={styles.textDetail}>: {params.pipeline}</Text>
-                <Text style={styles.textDetail}>: {params.customers[0].name}</Text>
-                <Text style={styles.textDetail}>: {params.pics[0].name}</Text>
-                <Text style={styles.textDetail}>: {moment(params.createdAt).format('MMMM')}</Text>
-              </Col>
-              <Col style={{flex: 0.2}}>
-                <Text style={styles.textDetail}>Revenue</Text>
-                <Text style={styles.textDetail}>Project Type</Text>
-              </Col>
-              <Col style={{flex: 0.2}}>
-                <Text style={styles.textDetail}>: Rp 200,000,000</Text>
-                <Text style={styles.textDetail}>: -</Text>
-              </Col>
-            </Grid>
+            minHeight: height / 5,
+            height: 'auto',
+            marginBottom: 15}}>
+						<LinearGradient
+							start={{ x: 0.0, y: 0.25 }}
+							end={{ x: 1.5, y: 1 }}
+							locations={[0, 0.5, 0.6]}
+							colors={['#ee8084', '#dc6cbe', '#dc6cbe']}
+							style={styles.linearGradient}>
+              <H3 style={styles.detailTitleText}>Pipeline Detail</H3>
+              <Grid>
+                <Col style={{flex: 0.2}}>
+                  <Text style={styles.textDetail}>Pipeline Name</Text>
+                  <Text style={styles.textDetail}>Customer Name</Text>
+                  <Text style={styles.textDetail}>PIC</Text>
+                  <Text style={styles.textDetail}>Month</Text>
+                  <Text style={styles.textDetail}>Revenue</Text>
+                  <Text style={styles.textDetail}>Project Type</Text>
+                </Col>
+                <Col style={{flex: 0.8}}>
+                  <Text style={styles.textDetail}>: {params.pipeline}</Text>
+                  <Text style={styles.textDetail}>: {params.customers[0].name}</Text>
+                  <Text style={styles.textDetail}>: {params.pics[0].name}</Text>
+                  <Text style={styles.textDetail}>: {moment(params.createdAt).format('MMMM')}</Text>
+                  <Text style={styles.textDetail}>: Rp 200,000,000</Text>
+                  <Text style={styles.textDetail}>: -</Text>
+                </Col>
+              </Grid>
+            </LinearGradient>
           </View>
           <View style={{
             backgroundColor: '#ffffff', 
@@ -121,7 +123,7 @@ class Approval extends Component {
             minHeight: height / 1.5,
             marginBottom: 15,
             padding: 20}}>
-            <H3 style={styles.detailTitleText}>Sales Activity</H3>
+            <H3 style={styles.detailTitleTextActivity}>Sales Activity</H3>
             <View style={{marginVertical: 40}}>
               <PipelineProgress currentPosition={params.step-1} />
             </View>
@@ -190,13 +192,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   textDetail: {
-    fontSize: 14,
-    marginTop: 10
+    fontSize: 16,
+    marginTop: 10,
+    color: '#fff',
+    fontWeight: 'bold'
   },
   detailTitleText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15
+    marginBottom: 15,
+    color: '#fff'
+  },
+  detailTitleTextActivity: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#000'
   },
   question: {
     fontSize: 14,
@@ -232,7 +243,13 @@ const styles = StyleSheet.create({
   approve: {
     fontWeight: 'bold',
     fontSize: 18
-  }
+  },
+  linearGradient: {
+		width: '100%',
+		height: 'auto',
+    padding: 20,
+    justifyContent: 'center',
+	},
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Approval)

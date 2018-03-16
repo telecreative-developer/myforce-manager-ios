@@ -43,13 +43,12 @@ const styles = StyleSheet.create({
 	},
 	textTitle: {
 		color: '#000000',
-		fontSize: 18,
+		fontSize: 20,
 		fontWeight: 'bold'
 	},
 	textPerson: {
 		color: '#000000',
-		marginLeft: 5,
-		fontSize: 14
+		fontSize: 16
 	},
 	text: {
 		color: '#000000',

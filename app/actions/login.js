@@ -15,6 +15,7 @@ export const login = (email, password) => {
 				body: JSON.stringify({ email, password, strategy: 'local' })
 			})
 			const data = await response.json()
+			await console.log(data)
 			if (data.code === 401 && data.name === 'NotAuthenticated') {
 				await dispatch(setFailed(true, 'login', 'Email or password incorrect'))
 				await dispatch(setLoading(false, 'PROCESS_LOGIN'))
