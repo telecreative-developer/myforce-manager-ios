@@ -29,6 +29,7 @@ import { fetchAnswer } from '../actions/answers'
 import { approvePipeline } from '../actions/pipelines'
 import { setNavigate } from '../actions/processor';
 import LinearGradient from 'react-native-linear-gradient'
+import { fetchTarget } from '../actions/targets'
 
 const { width, height } = Dimensions.get('window')
 
@@ -44,6 +45,7 @@ class Approval extends Component {
     const { sessionPersistance } = this.props
     this.props.fetchQuestionWithStep(params.step, sessionPersistance.accessToken)
     this.props.fetchAnswer(params.id, params.id_pipeline, params.id_customer, params.step, sessionPersistance.accessToken)
+    this.props.fetchTarget(moment().format('YYYY'))
   }
 
   handleApprove() {
@@ -118,7 +120,7 @@ class Approval extends Component {
                   <Text style={styles.textDetail}>: {params.customers[0].name}</Text>
                   <Text style={styles.textDetail}>: {params.pics[0].name}</Text>
                   <Text style={styles.textDetail}>: {moment(params.createdAt).format('MMMM')}</Text>
-                  <Text style={styles.textDetail}>: Rp 200,000,000</Text>
+                  <Text style={styles.textDetail}>: Rp {this.props.target.target_revenue_month}</Text>
                   <Text style={styles.textDetail}>: -</Text>
                 </Col>
               </Grid>
@@ -132,7 +134,7 @@ class Approval extends Component {
             padding: 20}}>
             <H3 style={styles.detailTitleTextActivity}>Sales Activity</H3>
             <View style={{marginVertical: 40}}>
-              <PipelineProgress currentPosition={params.step} />
+              <PipelineProgress currentPosition={params.step-1} />
             </View>
             <View>
               <H3 style={styles.question}>{questionWithStep.question}</H3>
@@ -175,11 +177,13 @@ const mapStateToProps = (state) => ({
   success: state.success,
   answer: state.answer,
   questionWithStep: state.questionWithStep,
-  sessionPersistance: state.sessionPersistance
+  sessionPersistance: state.sessionPersistance,
+  target: state.target
 })
 
 const mapDispatchToProps = (dispatch) => ({
   setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+  fetchTarget: (year) => dispatch(fetchTarget(year)),
   approvePipeline: (id_pipeline, id_branch, id_customer, id, step, accessToken) => dispatch(approvePipeline(id_pipeline, id_branch, id_customer, id, step, accessToken)),
   fetchAnswer: (id, id_pipeline, id_customer, step, accessToken) => dispatch(fetchAnswer(id, id_pipeline, id_customer, step, accessToken)),
   fetchQuestionWithStep: (step, accessToken) => dispatch(fetchQuestionWithStep(step, accessToken))

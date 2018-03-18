@@ -1,7 +1,7 @@
 import { url } from '../lib/server'
 import { setLoading, setSuccess, setFailed } from './processor'
 import { addPoint } from './points'
-import { RECEIVED_PIPELINES, FETCH_PIPELINES_WITH_ID_CUSTOMER } from '../constants'
+import { RECEIVED_PIPELINES, FETCH_PIPELINES_WITH_ID_CUSTOMER, FETCH_PIPELINES_WITH_BRANCH } from '../constants'
 
 export const fetchPipelines = (id_branch, accessToken) => {
 	return async dispatch => {
@@ -92,3 +92,34 @@ export const fetchPipelinesWithIdCustomerSuccess = data => {
 		payload: data
 	}
 }
+
+export const fetchPipelinesWithBranch = (id_branch, accessToken) => {
+	return async dispatch => {
+		await dispatch(setLoading(true, 'FETCH_PIPELINES'))
+		try {
+			const response = await fetch(
+				`${url}/pipelines?id_branch=${id_branch}&$sort[createdAt]=-1`,
+				{
+					method: 'GET',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+						Authorization: accessToken
+					}
+				}
+			)
+			const data = await response.json()
+			await dispatch(fetchPipelinesWithBranchSuccess(data.data))
+			await dispatch(setSuccess(false, 'FETCH_PIPELINES'))
+			await dispatch(setLoading(false, 'FETCH_PIPELINES'))
+		} catch (e) {
+			await dispatch(setFailed(true, 'FETCH_PIPELINES', e))
+			await dispatch(setLoading(false, 'FETCH_PIPELINES'))
+		}
+	}
+}
+
+export const fetchPipelinesWithBranchSuccess = data => ({
+	type: FETCH_PIPELINES_WITH_BRANCH,
+	payload: data
+})

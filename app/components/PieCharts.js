@@ -6,15 +6,15 @@ export default class PieCharts extends Component {
   render() {
     let data = [{
       "name": "Target",
-      "percentage": 20
+      "percentage": this.props.target
     }, {
       "name": "Completed",
-      "percentage": 20
+      "percentage": this.props.completed
     }]
 
     let dataTarget = [{
       "name": "Target",
-      "percentage": 20
+      "percentage": this.props.target
     }]
   
     let options = {

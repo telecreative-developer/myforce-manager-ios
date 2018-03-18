@@ -25,7 +25,6 @@ export const fetchPoints = (accessToken) => {
 			await dispatch(setSuccess(true, 'SUCCESS_FETCH_POINTS'))
 			await dispatch(setLoading(false, 'LOADING_FETCH_POINTS'))
 		} catch (e) {
-			console.log(e)
 			dispatch(setFailed(true, 'FAILED_FETCH_POINTS', e))
 			dispatch(setLoading(false, 'LOADING_FETCH_POINTS'))
 		}

@@ -23,7 +23,9 @@ import BarCharts from '../components/BarCharts'
 import { fetchMyBranch } from '../actions/branches'
 import image from '../assets/images/default-avatar.png'
 import { setNavigate } from '../actions/processor'
-import AnimatedBar from "react-native-animated-bar"
+import AnimatedBar from 'react-native-animated-bar'
+import { fetchTarget } from '../actions/targets'
+import { fetchPipelinesWithBranch } from '../actions/pipelines';
 
 const { width, height } = Dimensions.get('window')
 
@@ -32,7 +34,30 @@ class Overview extends Component {
   componentWillMount() {
     const { sessionPersistance } = this.props
     this.props.fetchMyBranch(sessionPersistance.id_manager, sessionPersistance.accessToken)
+    this.props.fetchTarget(moment().format('YYYY'))
+    this.props.fetchPipelinesWithBranch(sessionPersistance.id_branch, sessionPersistance.accessToken)
   }
+
+  resultCompleteRevenueMonth() {
+		let revenueMonth = 0
+		this.props.pipelinesWithBranch
+			.filter(
+				data => data.month === parseInt(moment().format('M')) && data.step === 7
+			)
+			.map(data => (revenueMonth += data.total))
+		return revenueMonth
+	}
+
+	resultCompleteRevenueYear() {
+		let revenueYear = 0
+		this.props.pipelinesWithBranch
+			.filter(
+				data =>
+					data.year === parseInt(moment().format('YYYY')) && data.step === 7
+			)
+			.map(data => (revenueYear += data.total))
+		return revenueYear
+	}
 
   key = (item,index) => index
 
@@ -69,11 +94,7 @@ class Overview extends Component {
           <Body>
             <Text style={styles.title}>OVERVIEW</Text>
           </Body>
-          <Right>
-            {/* <TouchableOpacity>
-              <Icon name="ios-notifications" size={25}></Icon>
-            </TouchableOpacity> */}
-          </Right>
+          <Right />
         </Header>
         <View style={styles.customerHeader}>
           <LinearGradient 
@@ -104,18 +125,53 @@ class Overview extends Component {
           </LinearGradient>
         </View>
         <Content style={styles.content} scrollEnabled={false}>
-        <Grid style={styles.chartsDirection}>
+          <Grid style={styles.chartsDirection}>
 						<Col style={styles.leftCharts}>
-							<PieCharts />
+            <PieCharts
+              target={this.props.target.target_month}
+              completed={
+                this.props.pipelinesWithBranch.filter(
+                  data =>
+                    data.month === parseInt(moment().format('M')) &&
+                    data.step === 7
+                ).length
+              } />
 						</Col>
 						<Col style={styles.rightCharts}>
 							<Text style={styles.chartTitle}>Gross In</Text>
 							<Text style={styles.chartMonth}>Monthly</Text>
-							<Text style={styles.chartPercentage}>100%</Text>
-							<Text style={styles.chartTargetUnder}>30 unit targets</Text>
+							<Text style={styles.chartPercentage}>
+              {parseFloat(
+                parseFloat(
+                  this.props.pipelinesWithBranch.filter(
+                    data =>
+                      data.month === parseInt(moment().format('M')) &&
+                      data.step === 7
+                  ).length / this.props.target.target_month
+                ) * 100
+              ).toFixed(2)} %
+              </Text>
+              <Text style={styles.chartTargetUnder}>
+								{this.props.pipelinesWithBranch.filter(
+										data =>
+											data.month === parseInt(moment().format('M')) &&
+											data.step === 7
+									).length
+								} of {this.props.target.target_month} unit targets
+							</Text>
 							<Text style={styles.chartYear}>Yearly</Text>
 							<AnimatedBar 
-								progress={0.2}
+								progress={parseFloat(
+									parseFloat(
+										parseFloat(
+											this.props.pipelinesWithBranch.filter(
+												data =>
+													data.year === parseInt(moment().format('YYYY')) &&
+													data.step === 7
+											).length / this.props.target.target_year
+										) * 100
+									).toFixed(2) / 100
+								)}
 								style={styles.bar}
 								height={40}
 								borderColor="#DDD"
@@ -123,28 +179,69 @@ class Overview extends Component {
 								fillColor="grey"	
 								borderRadius={5}
 								borderWidth={5}>
-									<View style={styles.row}>
-										<Text style={styles.barText}>
-											100%
-										</Text>
-									</View>
+                <View style={styles.row}>
+                  <Text style={styles.barText}>
+                  {parseFloat(
+                    parseFloat(
+                      this.props.pipelinesWithBranch.filter(
+                        data =>
+                          data.year === parseInt(moment().format('YYYY')) &&
+                          data.step === 7
+                      ).length / this.props.target.target_year
+                    ) * 100
+                  ).toFixed(2)} %
+                  </Text>
+                </View>
 							</AnimatedBar>
-							<Text style={styles.chartTarget}>360 unit targets</Text>
+              <Text style={styles.chartTarget}>
+								{this.props.pipelinesWithBranch.filter(
+										data =>
+											data.year === parseInt(moment().format('YYYY')) &&
+											data.step === 7
+									).length
+								} of {this.props.target.target_year} unit targets
+							</Text>
 						</Col>
 					</Grid>
 					<Grid style={styles.chartsDirection}>
-						<Col style={styles.leftCharts}>
-							<PieCharts />
+            <Col style={styles.leftCharts}>
+							<PieCharts
+								target={this.props.target.target_month}
+								completed={
+									this.props.pipelinesWithBranch.filter(
+										data =>
+											data.month === parseInt(moment().format('M')) &&
+											data.step === 7
+									).length} />
 						</Col>
 						<Col style={styles.rightCharts}>
 							<Text style={styles.chartTitle}>Revenue ORS</Text>
 							<Text style={styles.chartMonth}>Monthly</Text>
-							<Text style={styles.chartPercentage}>100%</Text>
-							<Text style={styles.chartTarget}>Rp. 120.000.000 Mio of</Text>
-							<Text style={styles.chartTargetUnder}>Rp. 1.200.000 Mio targets</Text>
+							<Text style={styles.chartPercentage}>
+              {parseFloat(
+                parseFloat(
+                  this.props.pipelinesWithBranch.filter(
+                    data =>
+                      data.month === parseInt(moment().format('M')) &&
+                      data.step === 7
+                  ).length / this.props.target.target_revenue_month
+                ) * 100
+              ).toFixed(2)} %</Text>
+							<Text style={styles.chartTarget}>Rp. {this.resultCompleteRevenueMonth()} Mio of</Text>
+							<Text style={styles.chartTargetUnder}>Rp. {this.props.pipelinesWithBranch.length*this.props.target.target_revenue_month} Mio targets</Text>
 							<Text style={styles.chartYear}>Yearly</Text>
 							<AnimatedBar 
-								progress={0.2}
+								progress={parseFloat(
+									parseFloat(
+										parseFloat(
+											this.props.pipelinesWithBranch.filter(
+												data =>
+													data.year === parseInt(moment().format('YYYY')) &&
+													data.step === 7
+											).length / this.props.target.target_revenue_year
+										) * 100
+									).toFixed(2) / 100
+								)}
 								style={styles.bar}
 								height={40}
 								borderColor="#DDD"
@@ -154,12 +251,20 @@ class Overview extends Component {
 								borderWidth={5}>
 									<View style={styles.row}>
 										<Text style={styles.barText}>
-										  100%
+                      {parseFloat(
+                        parseFloat(
+                          this.props.pipelinesWithBranch.filter(
+                            data =>
+                              data.year === parseInt(moment().format('YYYY')) &&
+                              data.step === 7
+                          ).length / this.props.target.target_revenue_year
+                        ) * 100
+                      ).toFixed(2)} %
 										</Text>
 									</View>
 							</AnimatedBar>
-							<Text style={styles.chartTarget}>Rp. 1.200.000.000 Mio of</Text>
-							<Text style={styles.chartTarget}>Rp. 1.200.000.000 Mio targets</Text>
+							<Text style={styles.chartTarget}>Rp. {this.resultCompleteRevenueYear()} Mio of</Text>
+							<Text style={styles.chartTargetUnder}>Rp. {this.props.pipelinesWithBranch.length*this.props.target.target_revenue_year} Mio targets</Text>
 						</Col>
 					</Grid>
         </Content>
@@ -170,10 +275,14 @@ class Overview extends Component {
 
 const mapStateToProps = (state) => ({
   sessionPersistance: state.sessionPersistance,
-  myBranch: state.myBranch
+  myBranch: state.myBranch,
+  target: state.target,
+  pipelinesWithBranch: state.pipelinesWithBranch
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  fetchPipelinesWithBranch: (id_branch, accessToken) => dispatch(fetchPipelinesWithBranch(id_branch, accessToken)),
+  fetchTarget: (year) => dispatch(fetchTarget(year)),
   setNavigate: (link, data) => dispatch(setNavigate(link, data)),
   fetchMyBranch: (id_manager, accessToken) => dispatch(fetchMyBranch(id_manager, accessToken))
 })
