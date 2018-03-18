@@ -41,6 +41,7 @@ import { setNavigate } from '../actions/processor'
 import { fetchPipelines, fetchPipelinesWithIdCustomer } from '../actions/pipelines'
 import { fetchPicsWithIDCustomer } from '../actions/pics'
 import PipelineProgress from '../components/PipelineProgress'
+import LinearGradient from 'react-native-linear-gradient'
 
 const { height, width } = Dimensions.get('window')
 
@@ -52,7 +53,15 @@ class CustomerProfile extends Component {
 			pipelineTabs: 'active',
 			pipeline: '',
 			id_pipeline: '',
-			step: ''
+			step: '',
+			isModalVisibleCart: false,
+			totalPrice: '0',
+			cartProducts: [
+				{
+					picture: 'http://www.nusacopy.com/images/a/produk/rental-fotocopy-warna.jpg',
+					subproduct: 'Test'
+				}
+			]
 		}
 	}
 
@@ -169,6 +178,7 @@ class CustomerProfile extends Component {
 						</View>
 					</View>
 					<View style={styles.picDirection}>
+						<Icon name="md-contact" size={15} color={"#000"} />
 						{item.pics.map((data, index) => (
 							<Text key={index} style={styles.data}>{data.name}</Text>
 						))}
@@ -182,6 +192,11 @@ class CustomerProfile extends Component {
 					) : (
 						<PipelineProgress currentPosition={item.step-1} />
 					)}
+				</View>
+				<View style={{justifyContent: 'center', flexDirection: 'row', display: 'flex', width: '100%', paddingVertical: 20}}>
+					<Button small style={{backgroundColor: '#2D38F9', height: 40 }} onPress={() => this.setState({isModalVisibleCart: true})}>
+						<Text style={{fontSize: 14}}>Order Summary</Text>
+					</Button>
 				</View>
 			</View>
 		</View>
@@ -204,6 +219,7 @@ class CustomerProfile extends Component {
 						</View>
 					</View>
 					<View style={styles.picDirection}>
+						<Icon name="md-contact" size={15} color={"#000"} />
 						{item.pics.map((data, index) => (
 							<Text key={index} style={styles.data}>{data.name}</Text>
 						))}
@@ -211,6 +227,11 @@ class CustomerProfile extends Component {
 				</View>
 				<View>
 					<PipelineProgress currentPosition={item.step-1} />
+				</View>
+				<View style={{justifyContent: 'center', flexDirection: 'row', display: 'flex', width: '100%', paddingVertical: 20}}>
+					<Button small style={{backgroundColor: '#2D38F9', height: 40 }} onPress={() => this.setState({isModalVisibleCart: true})}>
+						<Text style={{fontSize: 14}}>Order Summary</Text>
+					</Button>
 				</View>
 			</View>
 		</View>
@@ -233,6 +254,7 @@ class CustomerProfile extends Component {
 						</View>
 					</View>
 					<View style={styles.picDirection}>
+						<Icon name="md-contact" size={15} color={"#000"} />
 						{item.pics.map((data, index) => (
 							<Text key={index} style={styles.data}>{data.name}</Text>
 						))}
@@ -241,22 +263,66 @@ class CustomerProfile extends Component {
 				<View>
 					<PipelineProgress currentPosition={item.step-1} />
 				</View>
+				<View style={{justifyContent: 'center', flexDirection: 'row', display: 'flex', width: '100%', paddingVertical: 20}}>
+					<Button small style={{backgroundColor: '#2D38F9', height: 40 }} onPress={() => this.setState({isModalVisibleCart: true})}>
+						<Text style={{fontSize: 14}}>Order Summary</Text>
+					</Button>
+				</View>
 			</View>
 		</View>
 	)
 
 	renderItemsPic = ({ item }) => (
-		<TouchableOpacity style={styles.headerDirection}>
-			<Icon name="md-contact" size={15} />
-			<Text style={styles.data}>{item.name}</Text>
-		</TouchableOpacity>
+		<View style={styles.headerDirection}>
+			<Icon name="md-contact" size={15} color={"#fff"} />
+			<Text style={styles.dataPic}>{item.name}</Text>
+		</View>
 	)
+
+	renderItemCart = ({ item }) => {
+		return (
+			<ImageBackground
+				source={{ uri: item.picture }}
+				imageStyle={styles.cardImage}
+				style={styles.itemCart}>
+				<TouchableHighlight underlayColor={'transparent'}>
+					<Text style={styles.itemText}>{item.subproduct}</Text>
+				</TouchableHighlight>
+			</ImageBackground>
+		)
+	}
 
 	render() {
 		const { navigate, goBack, state } = this.props.navigation
 		const { params } = this.props.navigation.state
 		return (
 			<Container>
+				<Modal isVisible={this.state.isModalVisibleCart} style={styles.modal}   
+					onBackdropPress={() => this.setState({ isModalVisibleCart: false })}>
+					<View style={styles.cartContent}>
+						<View style={{width: '100%',alignItems: 'flex-end', paddingHorizontal: 20, paddingTop: 10,}}>
+							<TouchableHighlight underlayColor={'transparent'} onPress={() => this.setState({ isModalVisibleCart: false })}>
+								<Icon name="ios-close" size={35}/>
+							</TouchableHighlight>
+						</View>
+						<Text style={styles.modalTitle}>Order Cart</Text>
+						<Text style={styles.modalTotal}>Total Item: 1</Text>
+						<View style={{width: width / 1.3}}>
+							<Item stackedLabel style={styles.itemForm}>
+								<Label style={styles.productCategory}>Total Price</Label>
+								<Input value={this.state.totalPrice} onChangeText={(totalPrice) => this.setState({totalPrice})} keyboardType='numeric'/>
+							</Item>
+						</View>
+						<View>
+							<FlatList
+								showsVerticalScrollIndicator={false}
+								data={this.state.cartProducts}
+								style={styles.container}
+								keyExtractor={this.key}
+								renderItem={this.renderItemCart} />
+						</View>
+					</View>
+        </Modal>
 				<Header style={styles.header}>
 					<Left style={{ flexDirection: 'row' }}>
 						<Button transparent onPress={() => this.handleBackButton()}>
@@ -271,22 +337,29 @@ class CustomerProfile extends Component {
 				</Header>
 				<Content style={styles.content} showsVerticalScrollIndicator={false}>
 					<View style={styles.customerHeader}>
-						<View style={styles.headerDirectionTitle}>
-							<View>
-								<TouchableHighlight underlayColor={'transparent'}>
-									<H3 style={styles.headerDirectionTitle}>{params.name}</H3>
-								</TouchableHighlight>
-								<View style={styles.headerDirection}>
-									<Icon name="md-pin" size={15} />
-									<Text style={styles.dataAddress}>{params.address}</Text>
+						<LinearGradient
+							start={{ x: 0.0, y: 0.25 }}
+							end={{ x: 1.5, y: 1 }}
+							locations={[0, 0.5, 0.6]}
+							colors={['#20E6CD', '#2D38F9', '#2D38F9']}
+							style={styles.linearGradient}>
+							<View style={styles.headerDirectionTitle}>
+								<View>
+									<TouchableHighlight underlayColor={'transparent'}>
+										<H3 style={styles.headerDirectionTitle}>{params.name}</H3>
+									</TouchableHighlight>
+									<View style={styles.headerDirection}>
+										<Icon name="md-pin" size={15} color={"#fff"}/>
+										<Text style={styles.dataAddress}>{params.address}</Text>
+									</View>
+									<Text style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', paddingTop: 15, paddingLeft: 20 }}>PIC List:</Text>
+									<FlatList 
+										data={this.props.picsCustomers}
+										keyExtractor={this.key}
+										renderItem={this.renderItemsPic} />
 								</View>
-								<Text style={{fontSize: 12, paddingTop: 15, paddingLeft: 20 }}>PIC List:</Text>
-								<FlatList 
-									data={this.props.picsCustomers}
-									keyExtractor={this.key}
-									renderItem={this.renderItemsPic} />
 							</View>
-						</View>
+						</LinearGradient>
 					</View>
 					<View style={styles.customerTotal}>
 						<Grid style={{ display: 'flex', alignItems: 'center' }}>
@@ -426,7 +499,6 @@ const styles = StyleSheet.create({
 		backgroundColor: '#ffffff',
 		width: '100%',
 		height: 'auto',
-		paddingVertical: 20,
 		justifyContent: 'center'
 	},
 	headerDirection: {
@@ -438,7 +510,9 @@ const styles = StyleSheet.create({
 	headerDirectionTitle: {
 		display: 'flex',
 		flexDirection: 'row',
-		marginLeft: 20
+		marginLeft: 20,
+		color: '#fff',
+		fontWeight: 'bold'
 	},
 	customerTotal: {
 		width: '100%',
@@ -455,12 +529,14 @@ const styles = StyleSheet.create({
 	},
 	customerPipeline: {
 		width: '100%',
-		height: height / 5,
+		minHeight: height / 5,
+		height: 'auto',
 		backgroundColor: '#ffffff',
 		marginBottom: '2%',
 		flex: 1,
 		display: 'flex',
-		flexDirection: 'row'
+		flexDirection: 'row',
+		marginTop: 10
 	},
 	addPipeline: {
 		marginTop: '1%',
@@ -482,13 +558,18 @@ const styles = StyleSheet.create({
 		fontSize: 10
 	},
 	data: {
-		fontSize: 12,
+		fontSize: 14,
 		color: '#181818',
 		marginLeft: 5
 	},
+	dataPic: {
+		fontSize: 14,
+		color: '#fff',
+		marginLeft: 5
+	},
 	dataAddress: {
-		fontSize: 12,
-		color: '#181818',
+		fontSize: 14,
+		color: '#fff',
 		marginLeft: 5,
 		maxWidth: width / 1.5
 	},
@@ -596,9 +677,73 @@ const styles = StyleSheet.create({
 		fontSize: 35,
 		fontWeight: '900',
 		color: '#ffffff',
-		fontStyle: 'italic', 
+		fontStyle: 'italic',
 		textAlign: 'center',
 		backgroundColor: 'transparent'
+	},
+	cartContent: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    backgroundColor: '#ffffff',
+		margin: 0,
+		alignItems: 'center',
+		overflow:'hidden'
+	},
+	modalTitle: {
+		fontSize: 28,
+		fontWeight: 'bold'
+	},
+	modalTotal: {
+		fontSize: 22,
+		marginTop: 5
+	},
+	container: {
+		flex: 1,
+		marginTop: 20,
+		marginBottom: 40
+	},
+	itemCart: {
+		backgroundColor: '#000000',
+		alignItems: 'center',
+		justifyContent: 'center',
+		flex: 1,
+		marginBottom: 10,
+		paddingHorizontal: 20,
+		height: Dimensions.get('window').width / 4,
+		width: width / 1.3
+	},
+	itemText: {
+		color: '#fff',
+		textAlign: 'center',
+		backgroundColor: 'transparent'
+	},
+	cardFooterCart: {
+		position: 'absolute',
+		bottom: 0,
+		height: '25%',
+		backgroundColor: 'transparent'
+	},
+	cardButtonCart: {
+		backgroundColor: '#ff6961',
+		width: '100%',
+		height: '100%',
+		flexDirection: 'row',
+		borderRadius: 0
+	},
+	itemForm: {
+		marginTop: 20,
+		marginLeft: 0,
+		marginBottom: 20
+	},
+	productCategory: {
+		fontSize: 18,
+		color: '#696969'
+	},
+	linearGradient: {
+		width: '100%',
+		height: 'auto',
+		paddingVertical: 20,
 	},
 })
 

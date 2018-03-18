@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, TouchableOpacity, Dimensions, FlatList } from 'react-native'
+import { StyleSheet, TouchableOpacity, Dimensions, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
 import {
 	Container,
 	Content,
@@ -19,6 +19,7 @@ import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
 import { fetchSales } from '../actions/sales'
+import team from '../assets/images/team.jpg'
 
 const { width, height } = Dimensions.get('window')
 
@@ -56,9 +57,9 @@ class Team extends Component {
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableOpacity onPress={() => this.props.setNavigate('SalesProfile', item)}>
+		<TouchableHighlight underlayColor={'transparent'} onPress={() => this.props.setNavigate('SalesProfile', item)}>
 			<ContactCardTeam name={`${item.first_name} ${item.last_name}`} />
-		</TouchableOpacity>
+		</TouchableHighlight>
 	)
 
 	render() {
@@ -75,6 +76,10 @@ class Team extends Component {
 					</Body>
 					<Right />
 				</Header>
+				<ImageBackground
+					source={team}
+					imageStyle={styles.cardImage}
+					style={styles.bg}>
 				<View style={styles.searchView}>
 					<Item style={styles.searchForm} rounded>
 						<Input
@@ -91,6 +96,7 @@ class Team extends Component {
 						keyExtractor={this.key}
 						renderItem={this.renderItems} />
 				</Content>
+				</ImageBackground>
 			</Container>
 		)
 	}
@@ -109,6 +115,15 @@ const mapDispatchToProps = (dispatch) => ({
 const styles = StyleSheet.create({
 	header: {
 		height: 70
+	},
+	bg: {
+		display: 'flex',
+		width: width,
+		flex: 1,
+		backgroundColor: '#000000'
+	},
+	cardImage: {
+		opacity: 0.5
 	},
 	title: {
 		fontWeight: 'bold'

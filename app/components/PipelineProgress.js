@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import StepIndicator from 'react-native-step-indicator'
 
-const labels = ["Visit","Propose Product","Order Summary","Deal","Payment","Finished"]
+const labels = ["Identify Opportunities","Clarify Needs","Develop Criteria","Recommend a Solution","Gain Commitment","Manage Implementation"]
 
 const customStyles = {
   stepIndicatorSize: 25,

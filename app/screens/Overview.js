@@ -76,7 +76,12 @@ class Overview extends Component {
           </Right>
         </Header>
         <View style={styles.customerHeader}>
-          <LinearGradient colors={['#4568DC', '#B06AB3']} style={styles.linearGradient}>
+          <LinearGradient 
+						start={{ x: 0.0, y: 0.25 }}
+						end={{ x: 1.5, y: 1 }}
+						locations={[0, 0.5, 0.6]}
+						colors={['#ee8084', '#dc6cbe', '#dc6cbe']}
+            style={styles.linearGradient}>
             <Grid>
               <Col style={styles.leftCol}>
                 <View style={styles.headerDirection}>
@@ -195,7 +200,8 @@ const styles = StyleSheet.create({
   profileName: {
     marginTop: 5,
     marginLeft: 25,
-    color: '#ffffff',
+		fontWeight: 'bold',
+		color: '#ffffff',
     backgroundColor: 'transparent'
   },
   leftCol: {
@@ -221,10 +227,10 @@ const styles = StyleSheet.create({
 		color: '#e87e04'
   },
   chartTarget: {
-		fontSize: 16,
+		fontSize: 18,
 	},
 	chartTargetUnder: {
-		fontSize: 16,
+		fontSize: 18,
 		marginBottom: 15
 	},
 	chartYear: {
@@ -263,13 +269,13 @@ const styles = StyleSheet.create({
     padding: 20
   },
   periodeText: {
-    fontSize: 14,
+    fontSize: 16,
     backgroundColor: 'transparent',
     color: '#ffffff',
     textAlign: 'center'
   },
   data: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#ffffff',
     backgroundColor: 'transparent',
   },

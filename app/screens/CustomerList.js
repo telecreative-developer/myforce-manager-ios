@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, TouchableOpacity, Dimensions, FlatList } from 'react-native'
+import { StyleSheet, TouchableOpacity, Dimensions, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
 import {
 	Container,
 	Content,
@@ -21,6 +21,7 @@ import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
 import { fetchCustomers } from '../actions/customers'
 import { fetchPics } from '../actions/pics'
+import team from '../assets/images/bg-list.jpeg'
 
 const { width, height } = Dimensions.get('window')
 
@@ -42,21 +43,21 @@ class CustomerList extends Component {
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableOpacity onPress={() => this.props.setNavigate('CustomerProfile', item)}>
+		<TouchableHighlight underlayColor={'transparent'} onPress={() => this.props.setNavigate('CustomerProfile', item)}>
 			<View style={styles.card}>
 				<View style={styles.contentCard}>
 					<View style={styles.cardHeader}>
 						<H3 style={styles.textTitle}>{item.name}</H3>
 						{this.props.pics.filter(data => data.id_customer === item.id_customer).map((d, index) => (
 							<View style={styles.viewPerson} key={index}>
-								<Icon name="ios-person" color="#000000" size={15} />
+								<Icon name="ios-person" color="#000000" size={18} />
 								<Text style={styles.textPerson}>{d.name}</Text>
 							</View>
 						))}
 					</View>
 				</View>
 			</View>
-		</TouchableOpacity>
+		</TouchableHighlight>
 	)
 
 	render() {
@@ -73,6 +74,10 @@ class CustomerList extends Component {
 					</Body>
 					<Right />
 				</Header>
+				<ImageBackground
+					source={team}
+					imageStyle={styles.cardImage}
+					style={styles.bg}>
 				<View style={styles.searchView}>
 					<Item style={styles.searchForm} rounded>
 						<Input placeholder="Search" />
@@ -85,6 +90,7 @@ class CustomerList extends Component {
 						keyExtractor={this.key}
 						renderItem={this.renderItems} />
 				</Content>
+				</ImageBackground>
 			</Container>
 		)
 	}
@@ -109,6 +115,15 @@ const styles = StyleSheet.create({
 	title: {
 		fontWeight: 'bold'
 	},
+	bg: {
+		display: 'flex',
+		width: width,
+		flex: 1,
+		backgroundColor: '#000000'
+	},
+	cardImage: {
+		opacity: 0.5
+	},
 	content: {
 		paddingRight: width / 6,
 		paddingLeft: width / 6
@@ -130,7 +145,8 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		justifyContent: 'center',
 		borderRadius: 5,
-		height: height / 8,
+		minHeight: height / 8,
+		height: 'auto',
 		backgroundColor: '#ffffff',
 		marginBottom: '3%'
 	},
@@ -152,11 +168,11 @@ const styles = StyleSheet.create({
 	textPerson: {
 		color: '#000000',
 		marginLeft: 5,
-		fontSize: 14
+		fontSize: 16
 	},
 	text: {
 		color: '#000000',
-		fontSize: 11,
+		fontSize: 16,
 		marginTop: 5
 	},
 	cardHeader: {
