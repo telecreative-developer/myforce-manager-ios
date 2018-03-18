@@ -57,8 +57,7 @@ class Club extends Component {
 	)
 	
 	renderItemsRank = ({item, index}) => (
-		<View
-			style={{
+		<View style={{
 				display: 'flex',
 				flexDirection: 'row',
 				marginTop: 30,
@@ -67,18 +66,14 @@ class Club extends Component {
 			<Text style={{ fontSize: 16, fontWeight: 'bold', marginRight: 15 }}>
 				{index + 1}
 			</Text>
-			{item.users[0].avatar === '' ? (
-				<Thumbnail small source={defaultAvatar} style={{ marginRight: 10 }} />
+			{item.users[0].avatar ? (
+				<Thumbnail small source={{ uri: item.users[0].avatar }} style={{ marginRight: 10 }} />
 			) : (
-				<Thumbnail
-					small
-					source={{ uri: item.users[0].avatar }}
-					style={{ marginRight: 10 }}
-				/>
+				<Thumbnail small source={defaultAvatar} style={{ marginRight: 10 }} />
 			)}
 			<View>
 				<Text style={{ fontSize: 16, fontWeight: 'bold' }}>{`${item.users[0].first_name} ${item.users[0].last_name}`}</Text>
-				<Text style={{ fontSize: 14 }}>
+				<Text style={{fontSize: 14}}>
 					{JSON.stringify(item.point)} Points
 				</Text>
 			</View>
@@ -103,18 +98,13 @@ class Club extends Component {
 						<Grid>
 							<Col style={styles.leftCol}>
 								<View style={styles.headerDirectionData}>
-									{this.props.sessionPersistance.avatar === '' ? (
+									{sessionPersistance.avatar === '' ? (
 										<Thumbnail rounded large source={defaultAvatar} />
 									) : (
-										<Thumbnail
-											rounded
-											large
-											source={{uri: this.props.sessionPersistance.avatar}} />
+										<Thumbnail rounded large source={{uri: this.props.sessionPersistance.avatar}} />
 									)}
 									<View>
-										<TouchableOpacity>
-											<H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
-										</TouchableOpacity>
+										<H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
 										<View style={styles.headerDirection}>
                       <Text style={styles.data}>Branch Manager - {sessionPersistance.branch}</Text>
                     </View>

@@ -14,7 +14,7 @@ export const fetchPoints = (accessToken) => {
 					Authorization: accessToken
 				}
 			})
-      const data = await response.json()
+			const data = await response.json()
       const result = await [...data.data.reduce((mp, o) => {
         if (!mp.has(o.id)) {
           mp.set(o.id, {point: data.data.filter(d => d.id === o.id).map(d => d.point).reduce((x, y) => x + y), id_branch: o.id_branch, users: o.users})
@@ -25,6 +25,7 @@ export const fetchPoints = (accessToken) => {
 			await dispatch(setSuccess(true, 'SUCCESS_FETCH_POINTS'))
 			await dispatch(setLoading(false, 'LOADING_FETCH_POINTS'))
 		} catch (e) {
+			console.log(e)
 			dispatch(setFailed(true, 'FAILED_FETCH_POINTS', e))
 			dispatch(setLoading(false, 'LOADING_FETCH_POINTS'))
 		}

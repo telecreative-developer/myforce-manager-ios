@@ -27,6 +27,7 @@ import { connect } from 'react-redux'
 import { fetchQuestionWithStep } from '../actions/questions'
 import { fetchAnswer } from '../actions/answers'
 import { approvePipeline } from '../actions/pipelines'
+import { setNavigate } from '../actions/processor';
 
 const { width, height } = Dimensions.get('window')
 
@@ -60,15 +61,21 @@ class Approval extends Component {
 
   key = (item,index) => index
 
+  handleBack() {
+    const { goBack } = this.props.navigation
+    goBack()
+    this.props.setNavigate()
+  }
+
   render() {
     const { params } = this.props.navigation.state
-    const { navigate, goBack } = this.props.navigation
+    const { navigate } = this.props.navigation
     const { questionWithStep, answer, loading } = this.props
     return ( 
       <Container>
         <Header style={styles.header}>
           <Left style={styles.backDirection}>
-            <Button transparent onPress={() => goBack()}>
+            <Button transparent onPress={() => this.handleBack()}>
               <Icon name="ios-arrow-back" size={25} color="#000000" />
               <Text style={styles.back}>Back</Text>
             </Button>
@@ -170,6 +177,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  setNavigate: (link, data) => dispatch(setNavigate(link, data)),
   approvePipeline: (id_pipeline, id_branch, id_customer, id, step, accessToken) => dispatch(approvePipeline(id_pipeline, id_branch, id_customer, id, step, accessToken)),
   fetchAnswer: (id, id_pipeline, id_customer, step, accessToken) => dispatch(fetchAnswer(id, id_pipeline, id_customer, step, accessToken)),
   fetchQuestionWithStep: (step, accessToken) => dispatch(fetchQuestionWithStep(step, accessToken))

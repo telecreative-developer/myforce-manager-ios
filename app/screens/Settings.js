@@ -21,31 +21,31 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons'
 
 class Settings extends Component {
-	// handleConfirmLogout() {
-	// 	Alert.alert(
-	// 		'Logout',
-	// 		'Are you sure want to logout from this app?',
-	// 		[
-	// 			{
-	// 				text: 'Cancel',
-	// 				onPress: () => {},
-	// 				style: 'cancel'
-	// 			},
-	// 			{ text: 'Logout', onPress: () => this.handleLogout() }
-	// 		],
-	// 		{ cancelable: false }
-	// 	)
-	// }
+	handleConfirmLogout() {
+		Alert.alert(
+			'Logout',
+			'Are you sure want to logout from this app?',
+			[
+				{
+					text: 'Cancel',
+					onPress: () => {},
+					style: 'cancel'
+				},
+				{ text: 'Logout', onPress: () => this.handleLogout() }
+			],
+			{ cancelable: false }
+		)
+	}
 
-	// handleLogout() {
-	// 	AsyncStorage.removeItem('session')
-	// 	this.props.navigation.dispatch(
-	// 		NavigationActions.reset({
-	// 			index: 0,
-	// 			actions: [NavigationActions.navigate({ routeName: 'Start' })]
-	// 		})
-	// 	)
-	// }
+	handleLogout() {
+		AsyncStorage.removeItem('session')
+		this.props.navigation.dispatch(
+			NavigationActions.reset({
+				index: 0,
+				actions: [NavigationActions.navigate({ routeName: 'Start' })]
+			})
+		)
+	}
 
 	render() {
 		const { navigate, goBack } = this.props.navigation

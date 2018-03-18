@@ -23,8 +23,8 @@ export const login = (email, password) => {
 				await dispatch(fetchUserWithEmail(email, password, data.accessToken))
 			}
 		} catch (e) {
-			await dispatch(setFailed(true, 'PROCESS_LOGIN', e))
-			await dispatch(setLoading(false, 'PROCESS_LOGIN'))
+			dispatch(setFailed(true, 'PROCESS_LOGIN', e))
+			dispatch(setLoading(false, 'PROCESS_LOGIN'))
 		}
 	}
 }
