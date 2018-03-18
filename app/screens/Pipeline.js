@@ -117,7 +117,7 @@ class Pipeline extends Component {
 			<Container>
 				<Header hasTabs style={styles.header}>
 					<Left>
-						<TouchableOpacity>
+						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
 							<Thumbnail rounded small source={defaultAvatar} />
 						</TouchableOpacity>
 					</Left>
