@@ -23,6 +23,23 @@ import team from '../assets/images/team.jpg'
 
 const { width, height } = Dimensions.get('window')
 
+class SearchableFlatlist extends Component {
+  static INCLUDES = "includes";
+  static WORDS = "words";
+  getFilteredResults() {
+    let { data, type, searchProperty, searchTerm } = this.props;
+    return data.filter(
+      item =>
+        type && type === SearchableFlatlist.WORDS
+          ? new RegExp(`\\b${searchTerm}`, "gi").test(item[searchProperty])
+          : new RegExp(`${searchTerm}`, "gi").test(item[searchProperty])
+    );
+  }
+  render() {
+    return <FlatList {...this.props} data={this.getFilteredResults()} />;
+  }
+}
+
 class Team extends Component {
 	constructor() {
 		super()
@@ -57,11 +74,7 @@ class Team extends Component {
 					<Body>
 						<Text style={styles.title}>MY TEAM</Text>
 					</Body>
-					<Right>
-						{/* <TouchableOpacity>
-							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity> */}
-					</Right>
+					<Right />
 				</Header>
 				<ImageBackground
 					source={team}
@@ -71,12 +84,14 @@ class Team extends Component {
 					<Item style={styles.searchForm} rounded>
 						<Input
 							placeholder="Search"
-							onChangeText={name => this.setState({ search: name })} />
+							onChangeText={name => this.setState({search: name})} />
 						<Icon size={25} name="ios-search" />
 					</Item>
 				</View>
 				<Content style={styles.content}>
-					<FlatList
+					<SearchableFlatlist
+						searchProperty='first_name'
+						searchTerm={this.state.search}
 						data={this.props.sales}
 						keyExtractor={this.key}
 						renderItem={this.renderItems} />

@@ -124,11 +124,7 @@ class Pipeline extends Component {
 					<Body>
 						<Text style={styles.title}>TEAM ACTIVITY</Text>
 					</Body>
-					<Right>
-						{/* <TouchableOpacity>
-							<Icon name="ios-notifications" size={25} />
-						</TouchableOpacity> */}
-					</Right>
+					<Right />
 				</Header>
 				<Tabs>
 					<Tab heading="PIPELINE REQUEST" style={{backgroundColor: 'transparent'}}>

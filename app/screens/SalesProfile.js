@@ -32,19 +32,11 @@ import { setNavigate } from '../actions/processor'
 import defaultLoading from '../assets/images/default-loading.gif'
 import ImagePicker from 'react-native-image-picker'
 import defaultAvatar from '../assets/images/default-avatar.png'
+import defaultCover from '../assets/images/default-cover.jpg'
 
 const { width, height } = Dimensions.get('window')
 
 class SalesProfile extends Component {
-
-	renderBackground() {
-		return (
-			<View key="background">
-				<Image source={{uri: 'https://images.pexels.com/photos/567633/pexels-photo-567633.jpeg?w=1260&h=750&dpr=2&auto=compress&cs=tinysrgb', width: window.width, height: PARALLAX_HEADER_HEIGHT}} />
-				<View style={{position: 'absolute', top: 0, width: window.width, backgroundColor: 'rgba(42,92,240,.4)', height: PARALLAX_HEADER_HEIGHT}} />
-			</View>
-		)
-	}
 
 	handleBackButton() {
 		this.props.setNavigate()
@@ -81,11 +73,33 @@ class SalesProfile extends Component {
 				stickyHeaderHeight={STICKY_HEADER_HEIGHT}
 				parallaxHeaderHeight={PARALLAX_HEADER_HEIGHT}
 				backgroundSpeed={10}
-				renderBackground={this.renderBackground}
+				renderBackground={() => (
+					<View key="background">
+						{params.cover === null || params.cover === '' ? (
+							<Image source={defaultCover} style={{width: window.width, height: PARALLAX_HEADER_HEIGHT}} />
+						) : (
+							<Image source={{uri: params.cover}} style={{width: window.width, height: PARALLAX_HEADER_HEIGHT}} />
+						)}
+						<View style={{
+							position: 'absolute',
+							top: 0,
+							width: window.width,
+							backgroundColor: 'rgba(42,92,240,.4)',
+							height: PARALLAX_HEADER_HEIGHT
+						}} />
+					</View>
+				)}
 				renderForeground={() => (
 					<View key="parallax-header" style={styles.parallaxHeader}>
-					  <Image style={[styles.avatar, {width: AVATAR_SIZE, height: AVATAR_SIZE}]} source={params.avatar} />
+						{params.avatar === '' || params.avatar === null ? (
+							<Image style={[styles.avatar, {width: AVATAR_SIZE, height: AVATAR_SIZE}]} source={defaultAvatar} />
+						) : (
+							<Image style={styles.avatar} source={{uri: params.avatar, width: AVATAR_SIZE, height: AVATAR_SIZE}} />
+						)}
 						<Text style={styles.sectionSpeakerText}>{`${params.first_name} ${params.last_name}`}</Text>
+						<Text style={styles.sectionTitleText}>
+							{params.bio}
+						</Text>
 					</View>
 				)}
 				renderStickyHeader={() => (

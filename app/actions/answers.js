@@ -6,7 +6,7 @@ export const fetchAnswer = (id, id_pipeline, id_customer, step, accessToken) => 
 	return async dispatch => {
 		await dispatch(setLoading(true, 'LOADING_FETCH_QUESTION'))
 		try {
-			const response = await fetch(`${url}/answers?id=${id}&id_pipeline=${id_pipeline}&step=${step}&id_customer=${id_customer}`, {
+			const response = await fetch(`${url}/answers?id=${id}&id_pipeline=${id_pipeline}&step=${step-1}&id_customer=${id_customer}`, {
 				method: 'GET',
 				headers: {
 					Accept: 'application/json',

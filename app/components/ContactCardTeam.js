@@ -13,7 +13,7 @@ const ContactCardTeam = props => {
 				<View style={styles.cardHeader}>
 					<H3 style={styles.textTitle}>{props.name}</H3>
 					<View style={styles.viewPerson}>
-						<Text style={styles.textPerson}>OEM</Text>
+						<Text style={styles.textPerson}>OAM</Text>
 					</View>
 				</View>
 			</View>

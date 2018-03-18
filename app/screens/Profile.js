@@ -22,16 +22,21 @@ import {
 	Input,
 	Badge,
 	Grid,
-	Col
+	Col,
+	Button,
+	Spinner
 } from 'native-base'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import LinearGradient from 'react-native-linear-gradient'
-import Icon, { Button } from 'react-native-vector-icons/Ionicons'
+import Modal from 'react-native-modal'
+import Icon from 'react-native-vector-icons/Ionicons'
 import { connect } from 'react-redux'
 import { setNavigate } from '../actions/processor'
 import defaultLoading from '../assets/images/default-loading.gif'
 import ImagePicker from 'react-native-image-picker'
 import defaultAvatar from '../assets/images/default-avatar.png'
+import defaultCover from '../assets/images/default-cover.jpg'
+import { postCover, postAvatar } from '../actions/managers'
 
 const { width, height } = Dimensions.get('window')
 
@@ -40,56 +45,108 @@ class Profile extends Component {
 		super()
 
 		this.state = {
-			avatarBase64: ''
+			avatar: '',
+			cover: '',
+			avatarBase64: '',
+			coverBase64: '',
+			hasChangeAvatar: false,
+			hasChangeCover: false,
+			isVisibleModalPhotoProfile: false,
+			isVisibleModalCover: false
 		}
 	}
-
-	renderBackground() {
-		return (
-			<View key="background">
-				<Image
-					source={{
-						uri:
-							'https://images.pexels.com/photos/567633/pexels-photo-567633.jpeg?w=1260&h=750&dpr=2&auto=compress&cs=tinysrgb',
-						width: window.width,
-						height: PARALLAX_HEADER_HEIGHT
-					}}
-				/>
-				<View
-					style={{
-						position: 'absolute',
-						top: 0,
-						width: window.width,
-						backgroundColor: 'rgba(42,92,240,.4)',
-						height: PARALLAX_HEADER_HEIGHT
-					}} />
-			</View>
-		)
+	
+	componentWillMount() {
+		this.setState({
+			avatar: this.props.sessionPersistance.avatar,
+			cover: this.props.sessionPersistance.cover
+		})
 	}
 
 	handleBackButton() {
+		this.props.setNavigate()
 		this.props.navigation.goBack()
 	}
 
-	// handleChangeProfile() {
-	// 	const { id, accessToken } = this.props.sessionPersistance
-	// 	const options = {
-	// 		quality: 1.0,
-	// 		maxWidth: 500,
-	// 		maxHeight: 500,
-	// 		storageOptions: {
-	// 			skipBackup: true
-	// 		}
-	// 	}
+	handleSendAvatar() {
+		const { id_manager, accessToken } = this.props.sessionPersistance
+		this.props.postAvatar(id_manager, this.state.avatarBase64, accessToken)
+	}
 
-	// 	ImagePicker.showImagePicker(options, response => {
-	// 		if (response.didCancel) {
-	// 			this.setState({ avatarBase64: this.state.avatarBase64 })
-	// 		} else {
-	// 			this.props.postAvatar(id, `data:image/png;base64,${response.data}`, accessToken)
-	// 		}
-	// 	})
-	// }
+	handleSendCover() {
+		const { id_manager, accessToken } = this.props.sessionPersistance
+		this.props.postCover(id_manager, this.state.coverBase64, accessToken)
+	}
+
+	handleChangeProfile(type) {
+		const { id, accessToken } = this.props.sessionPersistance
+		const options = {
+			quality: 1.0,
+			maxWidth: 500,
+			maxHeight: 500,
+			storageOptions: {
+				skipBackup: true
+			}
+		}
+
+		if(type === 'camera') {
+			ImagePicker.launchCamera(options, (response)  => {
+				if (response.didCancel) {
+					this.setState({hasChangeAvatar: false})
+				}else{
+					this.setState({hasChangeAvatar: true, avatarBase64: `data:image/png;base64,${response.data}`})
+				}
+			})
+		}else if(type === 'library') {
+			ImagePicker.launchImageLibrary(options, (response)  => {
+				if (response.didCancel) {
+					this.setState({hasChangeAvatar: false})
+				}else{
+					this.setState({hasChangeAvatar: true, avatarBase64: `data:image/png;base64,${response.data}`})
+				}
+			})
+		}
+	}
+
+	handleChangeCover(type) {
+		const { id, accessToken } = this.props.sessionPersistance
+		const options = {
+			quality: 1.0,
+			maxWidth: 500,
+			maxHeight: 500,
+			storageOptions: {
+				skipBackup: true
+			}
+		}
+
+		if(type === 'camera') {
+			ImagePicker.launchCamera(options, (response)  => {
+				if (response.didCancel) {
+					this.setState({hasChangeCover: false})
+				}else{
+					this.setState({hasChangeCover: true, coverBase64: `data:image/png;base64,${response.data}`})
+				}
+			})
+		}else if(type === 'library') {
+			ImagePicker.launchImageLibrary(options, (response)  => {
+				if (response.didCancel) {
+					this.setState({hasChangeCover: false})
+				}else{
+					this.setState({hasChangeCover: true, coverBase64: `data:image/png;base64,${response.data}`})
+				}
+			})
+		}
+	}
+
+	componentWillReceiveProps(props) {
+		if(props.success.condition === true && props.success.process_on === 'SUCCESS_POST_COVER') {
+			this.setState({isVisibleModalCover: false, hasChangeCover: false, coverBase64: ''})
+		}
+
+		if(props.success.condition === true && props.success.process_on === 'SUCCESS_POST_AVATAR') {
+			this.setState({isVisibleModalPhotoProfile: false, hasChangeAvatar: false, avatarBase64: ''})
+		}
+	}
 
 	renderFixedHeader = () => {
 		const { navigate } = this.props.navigation
@@ -104,8 +161,7 @@ class Profile extends Component {
 								name="ios-arrow-back"
 								size={25}
 								color="#fff"
-								style={styles.iconBack}
-							/>
+								style={styles.iconBack} />
 							<Text style={styles.back}>Back</Text>
 						</TouchableOpacity>
 					</View>
@@ -114,23 +170,132 @@ class Profile extends Component {
 					<View key="fixed-header" style={styles.fixedSection}>
 						<TouchableOpacity>
 							<Icon
-								name="ios-settings"
+								name='ios-settings'
 								size={25}
-								color="transparent"
-								style={styles.iconSetting}
-							/>
+								color='transparent'
+								style={styles.iconSetting} />
 						</TouchableOpacity>
 						<TouchableOpacity
 							onPress={() => this.props.navigation.navigate('Settings')}>
 							<Icon
-								name="ios-settings"
+								name='ios-settings'
 								size={25}
-								color="#fff"
+								color='#fff'
 								style={styles.iconBell} />
 						</TouchableOpacity>
 					</View>
 				</Col>
 			</Grid>
+		)
+	}
+
+	renderModalCover() {
+		return (
+			<Modal
+				onBackdropPress={() => this.setState({isVisibleModalCover: false})}
+				isVisible={this.state.isVisibleModalCover}>
+				<View style={styles.modalContent}>
+					{this.state.coverBase64 === null || this.state.coverBase64 === '' ? (
+						<Image style={{width: '100%', height: 400}} source={defaultCover} />
+					) : (
+						<Image style={{width: '100%', height: 400}} source={{uri: this.state.coverBase64}} />
+					)}
+					{this.state.hasChangeCover ? (
+						<View style={{flexDirection: 'row'}}>
+							<View style={{margin: 5, marginTop: 22}}>
+								{this.props.loading.condition === true && this.props.loading.process_on === 'LOADING_POST_COVER' ? (
+									<Button success>
+										<Spinner color='#FFFFFF' />
+									</Button>
+								) : (
+									<Button success onPress={() => this.handleSendCover()}>
+										<Text style={{color: '#FFFFFF'}}>Save Cover</Text>
+									</Button>
+								)}
+							</View>
+							<View style={{margin: 5, marginTop: 22}}>
+								{this.props.loading.condition === true && this.props.loading.process_on === 'LOADING_POST_COVER' ? (
+									<Button danger disabled>
+										<Text style={{color: '#FFFFFF'}}>Cancel Change</Text>
+									</Button>
+								) : (
+									<Button danger onPress={() => this.setState({isVisibleModalCover: false, hasChangeCover: false, coverBase64: ''})}>
+										<Text style={{color: '#FFFFFF'}}>Cancel Change</Text>
+									</Button>
+								)}
+							</View>
+						</View>
+					) : (
+						<View style={{flexDirection: 'row'}}>
+							<View style={{margin: 5, marginTop: 22}}>
+								<Button block onPress={() => this.handleChangeCover('camera')}>
+									<Text style={{color: '#FFFFFF'}}>Open Camera</Text>
+								</Button>
+							</View>
+							<View style={{margin: 5, marginTop: 22}}>
+								<Button block onPress={() => this.handleChangeCover('library')}>
+									<Text style={{color: '#FFFFFF'}}>Open Gallery</Text>
+								</Button>
+							</View>
+						</View>
+					)}
+				</View>
+			</Modal>
+		)
+	}
+
+	renderModalPhotoProfile() {
+		return (
+			<Modal
+				onBackdropPress={() => this.setState({isVisibleModalPhotoProfile: false})}
+				isVisible={this.state.isVisibleModalPhotoProfile}>
+				<View style={styles.modalContent}>
+					{this.state.avatarBase64 === null || this.state.avatarBase64 === '' ? (
+						<Image style={{width: '50%', height: '60%'}} source={defaultAvatar} />
+					) : (
+						<Image style={{width: '50%', height: '60%'}} source={{uri: this.state.avatarBase64}} />
+					)}
+					{this.state.hasChangeAvatar ? (
+						<View style={{flexDirection: 'row'}}>
+							<View style={{margin: 5, marginTop: 22}}>
+								{this.props.loading.condition === true && this.props.loading.process_on === 'LOADING_POST_AVATAR' ? (
+									<Button success>
+										<Spinner color='#FFFFFF' />
+									</Button>
+								) : (
+									<Button success onPress={() => this.handleSendAvatar()}>
+										<Text style={{color: '#FFFFFF'}}>Save Avatar</Text>
+									</Button>
+								)}
+							</View>
+							<View style={{margin: 5, marginTop: 22}}>
+								{this.props.loading.condition === true && this.props.loading.process_on === 'LOADING_POST_AVATAR' ? (
+									<Button success disabled>
+										<Text style={{color: '#FFFFFF'}}>Cancel Change</Text>
+									</Button>
+								) : (
+									<Button danger onPress={() => this.setState({isVisibleModalPhotoProfile: false, hasChangeAvatar: false, avatarBase64: ''})}>
+										<Text style={{color: '#FFFFFF'}}>Cancel Change</Text>
+									</Button>
+								)}
+							</View>
+						</View>
+					) : (
+						<View style={{flexDirection: 'row'}}>
+							<View style={{margin: 5, marginTop: 22}}>
+								<Button onPress={() => this.handleChangeProfile('camera')}>
+									<Text style={{color: '#FFFFFF'}}>Open Camera</Text>
+								</Button>
+							</View>
+							<View style={{margin: 5, marginTop: 22}}>
+								<Button onPress={() => this.handleChangeProfile('library')}>
+									<Text style={{color: '#FFFFFF'}}>Open Gallery</Text>
+								</Button>
+							</View>
+						</View>
+					)}
+				</View>
+			</Modal>
 		)
 	}
 
@@ -143,20 +308,39 @@ class Profile extends Component {
 				stickyHeaderHeight={STICKY_HEADER_HEIGHT}
 				parallaxHeaderHeight={PARALLAX_HEADER_HEIGHT}
 				backgroundSpeed={10}
-				renderBackground={this.renderBackground}
+				renderBackground={() => (
+					<View key="background">
+						{this.state.cover === null || this.state.cover === '' ? (
+							<Image source={defaultCover} style={{width: window.width, height: PARALLAX_HEADER_HEIGHT}} />
+						) : (
+							<Image source={{uri: this.state.cover}} style={{width: window.width, height: PARALLAX_HEADER_HEIGHT}} />
+						)}
+						<View style={{
+							position: 'absolute',
+							top: 0,
+							width: window.width,
+							backgroundColor: 'rgba(42,92,240,.4)',
+							height: PARALLAX_HEADER_HEIGHT
+						}} />
+					</View>
+				)}
 				renderForeground={() => (
 					<View key="parallax-header" style={styles.parallaxHeader}>
-					  <Image style={[styles.avatar, {width: AVATAR_SIZE, height: AVATAR_SIZE}]} source={defaultAvatar} />
-						<TouchableOpacity style={styles.viewBadge} onPress={() => this.handleChangeProfile()}>
+						{this.state.avatar === '' || this.state.avatar === null ? (
+							<Image style={[styles.avatar, {width: AVATAR_SIZE, height: AVATAR_SIZE}]} source={defaultAvatar} />
+						) : (
+							<Image style={styles.avatar} source={{uri: this.state.avatar, width: AVATAR_SIZE, height: AVATAR_SIZE}} />
+						)}
+						<TouchableOpacity style={styles.viewBadge} onPress={() => this.setState({isVisibleModalPhotoProfile: true})}>
 							<Badge style={styles.changeAvatarBadge}>
 								<Icon name="md-create" color={'#ffffff'} size={20} />
 							</Badge>
 						</TouchableOpacity>
-						<Text style={styles.sectionSpeakerText}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</Text>
-						{/* <Text style={styles.sectionTitleText}>
+						<Text style={styles.sectionSpeakerText}>{`${this.props.sessionPersistance.first_name} ${sessionPersistance.last_name}`}</Text>
+						<Text style={styles.sectionTitleText}>
 							{sessionPersistance.bio}
-						</Text> */}
-						<TouchableOpacity style={styles.changeCover}>
+						</Text>
+						<TouchableOpacity style={styles.changeCover} onPress={() => this.setState({isVisibleModalCover: true})}>
 							<Badge
 								style={{
 									backgroundColor: '#2A5CF0',
@@ -175,6 +359,8 @@ class Profile extends Component {
 					</View>
 				)}
 				renderFixedHeader={this.renderFixedHeader}>
+				{this.renderModalCover()}
+				{this.renderModalPhotoProfile()}
 				<View style={styles.profileInfoView}>
 					<H2 style={styles.profileInfoTitle}>PROFILE INFO</H2>
 					<Form>
@@ -222,17 +408,16 @@ class Profile extends Component {
 }
 
 const mapStateToProps = state => ({
-	users: state.users,
 	loading: state.loading,
+	success: state.success,
 	sessionPersistance: state.sessionPersistance
 })
 
-// const mapDispatchToProps = dispatch => {
-// 	return {
-// 		postAvatar: (id, avatar, accessToken) => dispatch(postAvatar(id, avatar, accessToken)),
-// 		setNavigate: (link, data) => dispatch(setNavigate(link, data))
-// 	}
-// }
+const mapDispatchToProps = dispatch => ({
+	postAvatar: (id_manager, avatar, accessToken) => dispatch(postAvatar(id_manager, avatar, accessToken)),
+	postCover: (id_manager, avatar, accessToken) => dispatch(postCover(id_manager, avatar, accessToken)),
+	setNavigate: (link, data) => dispatch(setNavigate(link, data))
+})
 
 const window = Dimensions.get('window')
 
@@ -245,6 +430,14 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1
 	},
+	modalContent: {
+    backgroundColor: '#FFFFFF',
+		padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)'
+  },
 	background: {
 		position: 'absolute',
 		top: 0,
@@ -379,4 +572,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default connect(mapStateToProps)(Profile)
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)
