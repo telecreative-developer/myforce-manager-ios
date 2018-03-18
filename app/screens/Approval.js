@@ -56,7 +56,7 @@ class Approval extends Component {
       'Are you sure approve this pipeline?',
       [
         {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-        {text: 'OK', onPress: () => this.props.approvePipeline(params.id_pipeline, sessionPersistance.id_branch, params.id_customer, params.id, params.step, sessionPersistance.accessToken)},
+        {text: 'OK', onPress: () => this.props.approvePipeline(params.id_pipeline, sessionPersistance.id_branch, params.id_customer, params.id, params.step === 7 ? params.step : params.step+1, sessionPersistance.accessToken)},
       ],
       { cancelable: false }
     )

@@ -42,7 +42,7 @@ export const approvePipeline = (id_pipeline, id_branch, id_customer, id, step, a
 					'Content-Type': 'application/json',
 					Authorization: accessToken
 				},
-				body: JSON.stringify({step: step+1, step_process: false})
+				body: JSON.stringify({step: step, step_process: false})
 			})
 			await dispatch(fetchPipelines(id_branch, accessToken))
 			if((step + 1) === 7) {

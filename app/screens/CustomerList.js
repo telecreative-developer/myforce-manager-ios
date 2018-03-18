@@ -65,7 +65,7 @@ class CustomerList extends Component {
 			<Container>
 				<Header style={styles.header}>
 					<Left>
-						<TouchableOpacity>
+						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
 							<Thumbnail rounded small source={defaultAvatar} />
 						</TouchableOpacity>
 					</Left>
