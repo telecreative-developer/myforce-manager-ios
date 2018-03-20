@@ -11,9 +11,10 @@ import {
 	View,
 	Item,
 	Input,
-	Text
+	Text,
+	Button,
+	Icon
 } from 'native-base'
-import Icon from 'react-native-vector-icons/Ionicons'
 import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
@@ -45,13 +46,20 @@ class Team extends Component {
 		super()
 
 		this.state = {
-      search: ''
+			search: '',
+			refreshing: false
 		}
 	}
 
 	componentWillMount() {
-		const { sessionPersistance } = this.props
-		this.props.fetchSales(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		this.handleRefresh()
+	}
+
+	async handleRefresh() {
+		const { sessionPersistance } = await this.props
+		await this.setState({refreshing: true})
+		await this.props.fetchSales(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		await this.setState({refreshing: false})
 	}
 
 	key = (item, index) => index
@@ -63,18 +71,27 @@ class Team extends Component {
 	)
 
 	render() {
+		const { sessionPersistance } = this.props
 		return (
 			<Container>
 				<Header style={styles.header}>
 					<Left>
 						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
-							<Thumbnail rounded small source={defaultAvatar} />
+							{sessionPersistance.avatar !== null || sessionPersistance.avatar !== '' ? (
+								<Thumbnail rounded small source={{uri: sessionPersistance.avatar}} />
+							) : (
+								<Thumbnail rounded small source={defaultAvatar} />
+							)}
 						</TouchableOpacity>
 					</Left>
 					<Body>
 						<Text style={styles.title}>MY TEAM</Text>
 					</Body>
-					<Right />
+					<Right>
+						<Button transparent onPress={() => this.handleRefresh()}>
+							<Icon name='refresh' />
+						</Button>
+					</Right>
 				</Header>
 				<ImageBackground
 					source={team}
@@ -84,18 +101,20 @@ class Team extends Component {
 					<Item style={styles.searchForm} rounded>
 						<Input
 							placeholder="Search"
-							onChangeText={name => this.setState({search: name})} />
-						<Icon size={25} name="ios-search" />
+							onChangeText={search => this.setState({search})} />
+						<Icon size={25} name="search" />
 					</Item>
 				</View>
-				<Content style={styles.content}>
+				<View style={styles.content}>
 					<SearchableFlatlist
+						refreshing={this.state.refreshing}
+						onRefresh={() => this.handleRefresh()}
 						searchProperty='first_name'
 						searchTerm={this.state.search}
 						data={this.props.sales}
 						keyExtractor={this.key}
 						renderItem={this.renderItems} />
-				</Content>
+				</View>
 				</ImageBackground>
 			</Container>
 		)
@@ -130,7 +149,8 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		paddingRight: width / 6,
-		paddingLeft: width / 6
+		paddingLeft: width / 6,
+		height: height
 	},
 	searchView: {
 		display: 'flex',

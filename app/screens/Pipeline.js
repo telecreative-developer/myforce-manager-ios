@@ -17,9 +17,10 @@ import {
 	Grid,
 	Col,
 	H2,
-	Badge
+	Badge,
+	Button,
+	Icon
 } from 'native-base'
-import Icon from 'react-native-vector-icons/Ionicons'
 import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
@@ -30,18 +31,42 @@ import approve from '../assets/images/approve.jpeg'
 
 const { width, height } = Dimensions.get('window')
 
+// class SearchableFlatlist extends Component {
+//   static INCLUDES = "includes";
+//   static WORDS = "words";
+//   getFilteredResults() {
+//     let { data, type, searchProperty, searchTerm } = this.props;
+//     return data.filter(
+//       item =>
+//         type && type === SearchableFlatlist.WORDS
+//           ? new RegExp(`\\b${searchTerm}`, "gi").test(item[searchProperty])
+//           : new RegExp(`${searchTerm}`, "gi").test(item[searchProperty])
+//     );
+//   }
+//   render() {
+//     return <FlatList {...this.props} data={this.getFilteredResults()} />;
+//   }
+// }
+
 class Pipeline extends Component {
 	constructor() {
 		super()
 
 		this.state = {
-      search: ''
+			search: '',
+			refreshing: false
 		}
 	}
 
 	componentWillMount() {
-		const { sessionPersistance } = this.props
-		this.props.fetchPipelines(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		this.handleRefresh()
+	}
+
+	async handleRefresh() {
+		const { sessionPersistance } = await this.props
+		await this.setState({refreshing: true})
+		await this.props.fetchPipelines(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		await this.setState({refreshing: false})
 	}
 
 	renderBadges(item) {
@@ -79,7 +104,7 @@ class Pipeline extends Component {
 						</View>
             <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', item)}>
               <Text style={styles.viewText}>View</Text>
-              <Icon name="ios-arrow-forward" size={18} />
+              <Icon name="arrow-forward" size={18} />
             </TouchableOpacity>
           </Col>
         </Grid>
@@ -104,7 +129,7 @@ class Pipeline extends Component {
 						</View>
             <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', item)}>
               <Text style={styles.viewText}>View</Text>
-              <Icon name="ios-arrow-forward" size={18} />
+              <Icon name="arrow-forward" size={18} />
             </TouchableOpacity>
           </Col>
         </Grid>
@@ -113,18 +138,27 @@ class Pipeline extends Component {
   )
 
 	render() {
+		const { sessionPersistance } = this.props
 		return (
 			<Container>
 				<Header hasTabs style={styles.header}>
 					<Left>
 						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
-							<Thumbnail rounded small source={defaultAvatar} />
+							{sessionPersistance.avatar !== null || sessionPersistance.avatar !== '' ? (
+								<Thumbnail rounded small source={{uri: sessionPersistance.avatar}} />
+							) : (
+								<Thumbnail rounded small source={defaultAvatar} />
+							)}
 						</TouchableOpacity>
 					</Left>
 					<Body>
 						<Text style={styles.title}>TEAM ACTIVITY</Text>
 					</Body>
-					<Right />
+					<Right>
+						<Button transparent onPress={() => this.handleRefresh()}>
+							<Icon name='refresh' />
+						</Button>
+					</Right>
 				</Header>
 				<Tabs>
 					<Tab heading="PIPELINE REQUEST" style={{backgroundColor: 'transparent'}}>
@@ -134,12 +168,14 @@ class Pipeline extends Component {
 						style={styles.bg}>
 						<View style={styles.searchView}>
 							<Item style={styles.searchForm} rounded>
-								<Input placeholder="Search" />
-								<Icon size={25} name="ios-search" />
+								<Input placeholder="Search" onChangeText={search => this.setState({search})} />
+								<Icon size={25} name="search" />
 							</Item>
 						</View>
 						<View style={styles.flatListView}>
-							<FlatList 
+							<FlatList
+								onRefresh={() => this.handleRefresh()}
+								refreshing={this.state.refreshing}
 								data={this.props.pipelines.filter(data => data.step_process === true)}
 								keyExtractor={this.key}
 								renderItem={this.renderItemsRequest} />
@@ -154,7 +190,7 @@ class Pipeline extends Component {
 						<View style={styles.searchView}>
 							<Item style={styles.searchForm} rounded>
 								<Input placeholder="Search" />
-								<Icon size={25} name="ios-search" />
+								<Icon size={25} name="search" />
 							</Item>
 						</View>
 						<View style={styles.flatListView}>
@@ -261,7 +297,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
 	},
 	flatListView: {
-		paddingHorizontal: width / 8
+		paddingHorizontal: width / 8,
+		height: height
 	}
 })
 

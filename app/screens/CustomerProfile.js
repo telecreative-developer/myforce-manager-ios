@@ -54,14 +54,11 @@ class CustomerProfile extends Component {
 			pipeline: '',
 			id_pipeline: '',
 			step: '',
+			modalPic: false,
+			dataPic: {},
 			isModalVisibleCart: false,
 			totalPrice: '0',
-			cartProducts: [
-				{
-					picture: 'http://www.nusacopy.com/images/a/produk/rental-fotocopy-warna.jpg',
-					subproduct: 'Test'
-				}
-			]
+			cartProducts: []
 		}
 	}
 
@@ -273,10 +270,10 @@ class CustomerProfile extends Component {
 	)
 
 	renderItemsPic = ({ item }) => (
-		<View style={styles.headerDirection}>
-			<Icon name="md-contact" size={15} color={"#fff"} />
-			<Text style={styles.dataPic}>{item.name}</Text>
-		</View>
+		<TouchableOpacity style={styles.headerDirection} onPress={() => this.setState({modalPic: true, dataPic: item})}>
+			<Icon name="md-contact" size={15} color={'#fff'}/>
+			<Text style={styles.data}>{item.name}</Text>
+		</TouchableOpacity>
 	)
 
 	renderItemCart = ({ item }) => {
@@ -323,6 +320,50 @@ class CustomerProfile extends Component {
 						</View>
 					</View>
         </Modal>
+				<Modal isVisible={this.state.modalPic}>
+					<View style={styles.modalWrapperAddPipeline}>
+						<View style={styles.imageModal}>
+							<Text style={styles.pipelineModalText}>PIC INFO</Text>
+						</View>
+						<Content>
+							<View style={styles.formPicDirection}>
+								<Form>
+									<Item floatingLabel style={{borderColor: 'transparent'}}>
+										<Label>PIC Name</Label>
+										<Input value={this.state.dataPic.name} />
+									</Item>
+									<Item floatingLabel style={{borderColor: 'transparent'}}>
+										<Label>Job</Label>
+										<Input value={this.state.dataPic.job} />
+									</Item>
+									<Item floatingLabel style={{borderColor: 'transparent'}}>
+										<Label>Phone Number</Label>
+										<Input value={this.state.dataPic.phone} />
+									</Item>
+									<Item floatingLabel style={{borderColor: 'transparent'}}>
+										<Label>Email</Label>
+										<Input value={this.state.dataPic.email} />
+									</Item>
+									<Item floatingLabel style={{borderColor: 'transparent'}}>
+										<Label>Address</Label>
+										<Input
+											multiline={true}
+											value={this.state.dataPic.address}
+											style={styles.picAddress}
+										/>
+									</Item>
+								</Form>
+							</View>
+						</Content>
+						<Footer>
+							<FooterTab>
+								<Button onPress={() => this.setState({ modalPic: false })}>
+									<Text style={styles.modalYesButton}>OKE</Text>
+								</Button>
+							</FooterTab>
+						</Footer>
+					</View>
+				</Modal>
 				<Header style={styles.header}>
 					<Left style={{ flexDirection: 'row' }}>
 						<Button transparent onPress={() => this.handleBackButton()}>
@@ -478,6 +519,11 @@ const styles = StyleSheet.create({
 	closeIcon: {
 		textAlign: 'right'
 	},
+	data: {
+		fontSize: 14,
+		color: '#fff',
+		marginLeft: 5
+	},
 	newsText: {
 		fontSize: 12,
 		color: '#ffffff',
@@ -556,11 +602,6 @@ const styles = StyleSheet.create({
 	lastVisited: {
 		textAlign: 'right',
 		fontSize: 10
-	},
-	data: {
-		fontSize: 14,
-		color: '#181818',
-		marginLeft: 5
 	},
 	dataPic: {
 		fontSize: 14,

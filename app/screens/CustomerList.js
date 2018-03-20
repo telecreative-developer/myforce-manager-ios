@@ -12,9 +12,10 @@ import {
 	Item,
 	Input,
 	Text,
-	H3
+	H3,
+	Icon,
+	Button
 } from 'native-base'
-import Icon from 'react-native-vector-icons/Ionicons'
 import ContactCardTeam from '../components/ContactCardTeam'
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { connect } from 'react-redux'
@@ -25,19 +26,43 @@ import team from '../assets/images/bg-list.jpeg'
 
 const { width, height } = Dimensions.get('window')
 
+class SearchableFlatlist extends Component {
+  static INCLUDES = "includes";
+  static WORDS = "words";
+  getFilteredResults() {
+    let { data, type, searchProperty, searchTerm } = this.props;
+    return data.filter(
+      item =>
+        type && type === SearchableFlatlist.WORDS
+          ? new RegExp(`\\b${searchTerm}`, "gi").test(item[searchProperty])
+          : new RegExp(`${searchTerm}`, "gi").test(item[searchProperty])
+    );
+  }
+  render() {
+    return <FlatList {...this.props} data={this.getFilteredResults()} />;
+  }
+}
+
 class CustomerList extends Component {
 	constructor() {
 		super()
 
 		this.state = {
-      search: ''
+			search: '',
+			refreshing: false
 		}
 	}
 
 	componentWillMount() {
-		const { sessionPersistance } = this.props
-		this.props.fetchPics(sessionPersistance.accessToken)
-		this.props.fetchCustomers(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		this.handleRefresh()
+	}
+
+	async handleRefresh() {
+		const { sessionPersistance } = await this.props
+		await this.setState({refreshing: true})
+		await this.props.fetchPics(sessionPersistance.accessToken)
+		await this.props.fetchCustomers(sessionPersistance.id_branch, sessionPersistance.accessToken)
+		await this.setState({refreshing: false})
 	}
 
 	key = (item, index) => index
@@ -50,7 +75,7 @@ class CustomerList extends Component {
 						<H3 style={styles.textTitle}>{item.name}</H3>
 						{this.props.pics.filter(data => data.id_customer === item.id_customer).map((d, index) => (
 							<View style={styles.viewPerson} key={index}>
-								<Icon name="ios-person" color="#000000" size={18} />
+								<Icon name="person" color="#000000" style={{fontSize: 18}} />
 								<Text style={styles.textPerson}>{d.name}</Text>
 							</View>
 						))}
@@ -61,18 +86,27 @@ class CustomerList extends Component {
 	)
 
 	render() {
+		const { sessionPersistance } = this.props
 		return (
 			<Container>
 				<Header style={styles.header}>
 					<Left>
 						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
-							<Thumbnail rounded small source={defaultAvatar} />
+							{sessionPersistance.avatar !== null || sessionPersistance.avatar !== '' ? (
+								<Thumbnail rounded small source={{uri: sessionPersistance.avatar}} />
+							) : (
+								<Thumbnail rounded small source={defaultAvatar} />
+							)}
 						</TouchableOpacity>
 					</Left>
 					<Body>
 						<Text style={styles.title}>CUSTOMERS</Text>
 					</Body>
-					<Right />
+					<Right>
+						<Button transparent onPress={() => this.handleRefresh()}>
+							<Icon name='refresh' />
+						</Button>
+					</Right>
 				</Header>
 				<ImageBackground
 					source={team}
@@ -80,16 +114,22 @@ class CustomerList extends Component {
 					style={styles.bg}>
 				<View style={styles.searchView}>
 					<Item style={styles.searchForm} rounded>
-						<Input placeholder="Search" />
-						<Icon size={25} name="ios-search" />
+						<Input
+							placeholder="Search"
+							onChangeText={search => this.setState({search})} />
+						<Icon size={25} name="search" />
 					</Item>
 				</View>
-				<Content style={styles.content}>
-					<FlatList
+				<View style={styles.content}>
+					<SearchableFlatlist
+						onRefresh={() => this.handleRefresh()}
+						refreshing={this.state.refreshing}
+						searchProperty='name'
+						searchTerm={this.state.search}
 						data={this.props.customers}
 						keyExtractor={this.key}
 						renderItem={this.renderItems} />
-				</Content>
+				</View>
 				</ImageBackground>
 			</Container>
 		)
@@ -126,7 +166,8 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		paddingRight: width / 6,
-		paddingLeft: width / 6
+		paddingLeft: width / 6,
+		height: height
 	},
 	searchView: {
 		display: 'flex',

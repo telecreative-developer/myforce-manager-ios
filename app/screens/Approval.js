@@ -120,7 +120,7 @@ class Approval extends Component {
                   <Text style={styles.textDetail}>: {params.customers[0].name}</Text>
                   <Text style={styles.textDetail}>: {params.pics[0].name}</Text>
                   <Text style={styles.textDetail}>: {moment(params.createdAt).format('MMMM')}</Text>
-                  <Text style={styles.textDetail}>: Rp {this.props.target.target_revenue_month}</Text>
+                  <Text style={styles.textDetail}>: Rp {params.total}</Text>
                   <Text style={styles.textDetail}>: -</Text>
                 </Col>
               </Grid>
@@ -161,11 +161,13 @@ class Approval extends Component {
             </Button>
           </Footer>
         ) : (
-          <Footer style={styles.cardFooterCart}>
-            <Button full style={styles.cardButtonCart} onPress={() => this.handleApprove()}>
-              <Text style={styles.approve}>APPROVE</Text>
-            </Button>
-          </Footer>
+          params.step !== 7 && (
+            <Footer style={styles.cardFooterCart}>
+              <Button full style={styles.cardButtonCart} onPress={() => this.handleApprove()}>
+                <Text style={styles.approve}>APPROVE</Text>
+              </Button>
+            </Footer>
+          )
         )}
       </Container>
     )

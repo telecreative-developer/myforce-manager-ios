@@ -21,7 +21,7 @@ import { connect } from 'react-redux'
 import PieCharts from '../components/PieCharts'
 import BarCharts from '../components/BarCharts'
 import { fetchMyBranch } from '../actions/branches'
-import image from '../assets/images/default-avatar.png'
+import defaultAvatar from '../assets/images/default-avatar.png'
 import { setNavigate } from '../actions/processor'
 import AnimatedBar from 'react-native-animated-bar'
 import { fetchTarget } from '../actions/targets'
@@ -89,15 +89,14 @@ class Overview extends Component {
     return (
       <Container>
         <Header style={styles.header}>
-          <Left>
-          </Left>
+          <Left />
           <Body>
             <Text style={styles.title}>OVERVIEW</Text>
           </Body>
           <Right />
         </Header>
         <View style={styles.customerHeader}>
-          <LinearGradient 
+          <LinearGradient
 						start={{ x: 0.0, y: 0.25 }}
 						end={{ x: 1.5, y: 1 }}
 						locations={[0, 0.5, 0.6]}
@@ -106,7 +105,11 @@ class Overview extends Component {
             <Grid>
               <Col style={styles.leftCol}>
                 <View style={styles.headerDirection}>
-                  <Thumbnail rounded large source={image} />
+                  {sessionPersistance.avatar !== null || sessionPersistance.avatar !== '' ? (
+                    <Thumbnail rounded large source={{uri: sessionPersistance.avatar}} />
+                  ) : (
+                    <Thumbnail rounded large source={defaultAvatar} />
+                  )}
                   <View style={styles.managerData}>
                     <TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
                       <H3 style={styles.profileName}>{`${sessionPersistance.first_name} ${sessionPersistance.last_name}`}</H3>
