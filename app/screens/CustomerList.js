@@ -1,5 +1,12 @@
 import React, { Component } from 'react'
-import { StyleSheet, TouchableOpacity, Dimensions, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
+import {
+	StyleSheet,
+	TouchableOpacity,
+	Dimensions,
+	FlatList,
+	ImageBackground,
+	TouchableHighlight
+} from 'react-native'
 import {
 	Container,
 	Content,
@@ -27,20 +34,20 @@ import team from '../assets/images/bg-list.jpeg'
 const { width, height } = Dimensions.get('window')
 
 class SearchableFlatlist extends Component {
-  static INCLUDES = "includes";
-  static WORDS = "words";
-  getFilteredResults() {
-    let { data, type, searchProperty, searchTerm } = this.props;
-    return data.filter(
-      item =>
-        type && type === SearchableFlatlist.WORDS
-          ? new RegExp(`\\b${searchTerm}`, "gi").test(item[searchProperty])
-          : new RegExp(`${searchTerm}`, "gi").test(item[searchProperty])
-    );
-  }
-  render() {
-    return <FlatList {...this.props} data={this.getFilteredResults()} />;
-  }
+	static INCLUDES = 'includes'
+	static WORDS = 'words'
+	getFilteredResults() {
+		let { data, type, searchProperty, searchTerm } = this.props
+		return data.filter(
+			item =>
+				type && type === SearchableFlatlist.WORDS
+					? new RegExp(`\\b${searchTerm}`, 'gi').test(item[searchProperty])
+					: new RegExp(`${searchTerm}`, 'gi').test(item[searchProperty])
+		)
+	}
+	render() {
+		return <FlatList {...this.props} data={this.getFilteredResults()} />
+	}
 }
 
 class CustomerList extends Component {
@@ -59,26 +66,30 @@ class CustomerList extends Component {
 
 	async handleRefresh() {
 		const { sessionPersistance } = await this.props
-		await this.setState({refreshing: true})
+		await this.setState({ refreshing: true })
 		await this.props.fetchPics(sessionPersistance.accessToken)
 		await this.props.fetchCustomers(sessionPersistance.id_branch, sessionPersistance.accessToken)
-		await this.setState({refreshing: false})
+		await this.setState({ refreshing: false })
 	}
 
 	key = (item, index) => index
 
 	renderItems = ({ item }) => (
-		<TouchableHighlight underlayColor={'transparent'} onPress={() => this.props.setNavigate('CustomerProfile', item)}>
+		<TouchableHighlight
+			underlayColor={'transparent'}
+			onPress={() => this.props.setNavigate('CustomerProfile', item)}>
 			<View style={styles.card}>
 				<View style={styles.contentCard}>
 					<View style={styles.cardHeader}>
 						<H3 style={styles.textTitle}>{item.name}</H3>
-						{this.props.pics.filter(data => data.id_customer === item.id_customer).map((d, index) => (
-							<View style={styles.viewPerson} key={index}>
-								<Icon name="person" color="#000000" style={{fontSize: 18}} />
-								<Text style={styles.textPerson}>{d.name}</Text>
-							</View>
-						))}
+						{this.props.pics
+							.filter(data => data.id_customer === item.id_customer)
+							.map((d, index) => (
+								<View style={styles.viewPerson} key={index}>
+									<Icon name="person" color="#000000" style={{ fontSize: 18 }} />
+									<Text style={styles.textPerson}>{d.name}</Text>
+								</View>
+							))}
 					</View>
 				</View>
 			</View>
@@ -91,9 +102,9 @@ class CustomerList extends Component {
 			<Container>
 				<Header style={styles.header}>
 					<Left>
-						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
+						<TouchableOpacity onPress={() => this.props.setNavigate('Profile', '')}>
 							{sessionPersistance.avatar !== null || sessionPersistance.avatar !== '' ? (
-								<Thumbnail rounded small source={{uri: sessionPersistance.avatar}} />
+								<Thumbnail rounded small source={{ uri: sessionPersistance.avatar }} />
 							) : (
 								<Thumbnail rounded small source={defaultAvatar} />
 							)}
@@ -104,32 +115,28 @@ class CustomerList extends Component {
 					</Body>
 					<Right>
 						<Button transparent onPress={() => this.handleRefresh()}>
-							<Icon name='refresh' />
+							<Icon name="refresh" />
 						</Button>
 					</Right>
 				</Header>
-				<ImageBackground
-					source={team}
-					imageStyle={styles.cardImage}
-					style={styles.bg}>
-				<View style={styles.searchView}>
-					<Item style={styles.searchForm} rounded>
-						<Input
-							placeholder="Search"
-							onChangeText={search => this.setState({search})} />
-						<Icon size={25} name="search" />
-					</Item>
-				</View>
-				<View style={styles.content}>
-					<SearchableFlatlist
-						onRefresh={() => this.handleRefresh()}
-						refreshing={this.state.refreshing}
-						searchProperty='name'
-						searchTerm={this.state.search}
-						data={this.props.customers}
-						keyExtractor={this.key}
-						renderItem={this.renderItems} />
-				</View>
+				<ImageBackground source={team} imageStyle={styles.cardImage} style={styles.bg}>
+					<View style={styles.searchView}>
+						<Item style={styles.searchForm} rounded>
+							<Input placeholder="Search" onChangeText={search => this.setState({ search })} />
+							<Icon size={25} name="search" />
+						</Item>
+					</View>
+					<View style={styles.content}>
+						<SearchableFlatlist
+							onRefresh={() => this.handleRefresh()}
+							refreshing={this.state.refreshing}
+							searchProperty="name"
+							searchTerm={this.state.search}
+							data={this.props.customers}
+							keyExtractor={this.key}
+							renderItem={this.renderItems}
+						/>
+					</View>
 				</ImageBackground>
 			</Container>
 		)
@@ -145,7 +152,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 	fetchCustomers: (id_branch, accessToken) => dispatch(fetchCustomers(id_branch, accessToken)),
 	setNavigate: (link, data) => dispatch(setNavigate(link, data)),
-	fetchPics: (accessToken) => dispatch(fetchPics(accessToken))
+	fetchPics: accessToken => dispatch(fetchPics(accessToken))
 })
 
 const styles = StyleSheet.create({
@@ -222,7 +229,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		marginLeft: 15,
 		paddingBottom: 5
-	},
+	}
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomerList)

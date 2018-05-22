@@ -42,7 +42,7 @@ export const approvePipeline = (id_pipeline, id_branch, id_customer, id, step, a
 					'Content-Type': 'application/json',
 					Authorization: accessToken
 				},
-				body: JSON.stringify({step: step, step_process: false})
+				body: JSON.stringify({step: step, step_process: false, reject_status: false, reject_message: null})
 			})
 			await dispatch(fetchPipelines(id_branch, accessToken))
 			if((step + 1) === 7) {
@@ -56,6 +56,31 @@ export const approvePipeline = (id_pipeline, id_branch, id_customer, id, step, a
 		} catch (e) {
 			dispatch(setFailed(true, 'FAILED_APPROVE_PIPELINE', e))
 			dispatch(setLoading(false, 'LOADING_APPROVE_PIPELINE'))
+		}
+	}
+}
+
+export const rejectPipeline = (id_pipeline, id_branch, step, rejectMessage, accessToken) => {
+	return async dispatch => {
+		await dispatch(setLoading(true, 'LOADING_REJECT_PIPELINE'))
+		try {
+			await fetch(`${url}/pipelines/${id_pipeline}`, {
+				method: 'PATCH',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json',
+					Authorization: accessToken
+				},
+				body: JSON.stringify({step: step, step_process: false, reject_status: true, reject_message: rejectMessage})
+			})
+			await dispatch(fetchPipelines(id_branch, accessToken))
+			await dispatch(setSuccess(true, 'SUCCESS_REJECT_PIPELINE'))
+			await dispatch(setLoading(false, 'LOADING_REJECT_PIPELINE'))
+			await dispatch(setSuccess(false, 'SUCCESS_REJECT_PIPELINE'))
+		} catch (e) {
+			console.log(e)
+			dispatch(setFailed(true, 'FAILED_REJECT_PIPELINE', e))
+			dispatch(setLoading(false, 'LOADING_REJECT_PIPELINE'))
 		}
 	}
 }

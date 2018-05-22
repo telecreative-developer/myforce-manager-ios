@@ -20,25 +20,30 @@ import SalesProfile from './app/screens/SalesProfile'
 import Settings from './app/screens/Settings'
 import EditProfile from './app/screens/EditProfile'
 import ChangePassword from './app/screens/ChangePassword'
+import History from './app/screens/History'
 
 const store = Reactotron.createStore(rootReducers, applyMiddleware(thunk))
 
-const AppNavigator = StackNavigator({
-  Splash: {screen: Splash},
-  Start: {screen: Start},
-  Home: {screen: Home},
-  Approval: {screen: Approval},
-  Pipeline: {screen: Pipeline},
-  CustomerList: {screen: CustomerList},
-  CustomerProfile: {screen: CustomerProfile},
-  Profile: {screen: Profile},
-  SalesProfile: {screen: SalesProfile},
-  Settings: {screen: Settings},
-  EditProfile: {screen: EditProfile},
-  ChangePassword: {screen: ChangePassword}
-}, {
-  headerMode: 'none'
-})
+const AppNavigator = StackNavigator(
+  {
+    Splash: { screen: Splash },
+    Start: { screen: Start },
+    Home: { screen: Home },
+    Approval: { screen: Approval },
+    Pipeline: { screen: Pipeline },
+    CustomerList: { screen: CustomerList },
+    CustomerProfile: { screen: CustomerProfile },
+    Profile: { screen: Profile },
+    SalesProfile: { screen: SalesProfile },
+    Settings: { screen: Settings },
+    EditProfile: { screen: EditProfile },
+    ChangePassword: { screen: ChangePassword },
+    History: { screen: History }
+  },
+  {
+    headerMode: 'none'
+  }
+)
 
 const App = () => (
   <Provider store={store}>

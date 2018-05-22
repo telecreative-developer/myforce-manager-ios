@@ -12,7 +12,7 @@ import {
 	Item,
 	Input,
 	Text,
-	Tab, 
+	Tab,
 	Tabs,
 	Grid,
 	Col,
@@ -31,22 +31,23 @@ import approve from '../assets/images/approve.jpeg'
 
 const { width, height } = Dimensions.get('window')
 
-// class SearchableFlatlist extends Component {
-//   static INCLUDES = "includes";
-//   static WORDS = "words";
-//   getFilteredResults() {
-//     let { data, type, searchProperty, searchTerm } = this.props;
-//     return data.filter(
-//       item =>
-//         type && type === SearchableFlatlist.WORDS
-//           ? new RegExp(`\\b${searchTerm}`, "gi").test(item[searchProperty])
-//           : new RegExp(`${searchTerm}`, "gi").test(item[searchProperty])
-//     );
-//   }
-//   render() {
-//     return <FlatList {...this.props} data={this.getFilteredResults()} />;
-//   }
-// }
+class SearchableFlatlist extends Component {
+	static INCLUDES = 'includes'
+	static WORDS = 'words'
+	getFilteredResults() {
+		let { data, type, searchProperty, searchTerm } = this.props
+		return data.filter(
+			item =>
+				type && type === SearchableFlatlist.WORDS
+					? new RegExp(`\\b${searchTerm}`, 'gi').test(item[searchProperty])
+					: new RegExp(`${searchTerm}`, 'gi').test(item[searchProperty])
+		)
+	}
+
+	render() {
+		return <FlatList {...this.props} data={this.getFilteredResults()} />
+	}
+}
 
 class Pipeline extends Component {
 	constructor() {
@@ -64,78 +65,80 @@ class Pipeline extends Component {
 
 	async handleRefresh() {
 		const { sessionPersistance } = await this.props
-		await this.setState({refreshing: true})
+		await this.setState({ refreshing: true })
 		await this.props.fetchPipelines(sessionPersistance.id_branch, sessionPersistance.accessToken)
-		await this.setState({refreshing: false})
+		await this.setState({ refreshing: false })
 	}
 
 	renderBadges(item) {
-		if(item.step === 1) {
+		if (item.step === 1) {
 			return <Text>Identify Opportunities</Text>
-		}else if(item.step === 2) {
+		} else if (item.step === 2) {
 			return <Text>Clarify Needs</Text>
-		}else if(item.step === 3) {
+		} else if (item.step === 3) {
 			return <Text>Develop Criteria</Text>
-		}else if(item.step === 4) {
+		} else if (item.step === 4) {
 			return <Text>Recommend a Solution</Text>
-		}else if(item.step === 5) {
+		} else if (item.step === 5) {
 			return <Text>Gain Commitment</Text>
-		}else if(item.step === 6) {
+		} else if (item.step === 6) {
 			return <Text>Manage Implementation</Text>
 		}
 	}
 
-  key = (item,index) => index
+	key = (item, index) => index
 
-  renderItemsRequest = ({item}) => (
-    <View style={styles.customerPipeline}>
-      <View style={styles.pipelineContent}>
-        <Grid style={styles.grid}>
-          <Col style={styles.leftPipeline}>
-            <H2>{`${item.users[0].first_name} ${item.users[0].last_name}`}</H2>
-            <Text style={styles.contentText}>{item.pipeline}</Text>
-            <Text style={{fontSize: 16}}>{item.customers[0].name}</Text>
-          </Col>
-          <Col style={styles.rightPipeline}>
-						<View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
-							<Badge style={styles.badge}>
-								{this.renderBadges(item)}
-							</Badge>
+	renderItemsRequest = ({ item }) => (
+		<TouchableOpacity
+			style={styles.customerPipeline}
+			onPress={() => this.props.setNavigate('Approval', item)}>
+			<View style={styles.pipelineContent}>
+				<Grid style={styles.grid}>
+					<Col style={styles.leftPipeline}>
+						<H2>{item.pipeline}</H2>
+						<Text style={styles.contentText}>{item.customers[0].name}</Text>
+						<Text>{`${item.users[0].first_name} ${item.users[0].last_name}`}</Text>
+					</Col>
+					<Col style={styles.rightPipeline}>
+						<View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
+							<Badge style={styles.badge}>{this.renderBadges(item)}</Badge>
 						</View>
-            <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', item)}>
-              <Text style={styles.viewText}>View</Text>
-              <Icon name="arrow-forward" size={18} />
-            </TouchableOpacity>
-          </Col>
-        </Grid>
-      </View>
-    </View>
+						<View style={styles.more}>
+							<Text style={styles.viewText}>View</Text>
+							<Icon name="arrow-forward" size={18} />
+						</View>
+					</Col>
+				</Grid>
+			</View>
+		</TouchableOpacity>
 	)
-	
-	renderItemsApprove = ({item}) => (
-    <View style={styles.customerPipeline}>
-      <View style={styles.pipelineContent}>
-        <Grid style={styles.grid}>
-          <Col style={styles.leftPipeline}>
-            <H2>{`${item.users[0].first_name} ${item.users[0].last_name}`}</H2>
-            <Text style={styles.contentText}>{item.pipeline}</Text>
-            <Text>{item.customers[0].name}</Text>
-          </Col>
-          <Col style={styles.rightPipeline}>
-						<View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
+
+	renderItemsApprove = ({ item }) => (
+		<TouchableOpacity
+			style={styles.customerPipeline}
+			onPress={() => this.props.setNavigate('Approval', item)}>
+			<View style={styles.pipelineContent}>
+				<Grid style={styles.grid}>
+					<Col style={styles.leftPipeline}>
+						<H2>{item.pipeline}</H2>
+						<Text style={styles.contentText}>{item.customers[0].name}</Text>
+						<Text>{`${item.users[0].first_name} ${item.users[0].last_name}`}</Text>
+					</Col>
+					<Col style={styles.rightPipeline}>
+						<View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
 							<Badge style={styles.badge}>
 								<Text>Done</Text>
 							</Badge>
 						</View>
-            <TouchableOpacity style={styles.more} onPress={() => this.props.setNavigate('Approval', item)}>
-              <Text style={styles.viewText}>View</Text>
-              <Icon name="arrow-forward" size={18} />
-            </TouchableOpacity>
-          </Col>
-        </Grid>
-      </View>
-    </View>
-  )
+						<View style={styles.more}>
+							<Text style={styles.viewText}>View</Text>
+							<Icon name="arrow-forward" size={18} />
+						</View>
+					</Col>
+				</Grid>
+			</View>
+		</TouchableOpacity>
+	)
 
 	render() {
 		const { sessionPersistance } = this.props
@@ -143,9 +146,9 @@ class Pipeline extends Component {
 			<Container>
 				<Header hasTabs style={styles.header}>
 					<Left>
-						<TouchableOpacity onPress={() => this.props.setNavigate('Profile','')}>
+						<TouchableOpacity onPress={() => this.props.setNavigate('Profile', '')}>
 							{sessionPersistance.avatar !== null || sessionPersistance.avatar !== '' ? (
-								<Thumbnail rounded small source={{uri: sessionPersistance.avatar}} />
+								<Thumbnail rounded small source={{ uri: sessionPersistance.avatar }} />
 							) : (
 								<Thumbnail rounded small source={defaultAvatar} />
 							)}
@@ -156,49 +159,59 @@ class Pipeline extends Component {
 					</Body>
 					<Right>
 						<Button transparent onPress={() => this.handleRefresh()}>
-							<Icon name='refresh' />
+							<Icon name="refresh" />
 						</Button>
 					</Right>
 				</Header>
 				<Tabs>
-					<Tab heading="PIPELINE REQUEST" style={{backgroundColor: 'transparent'}}>
-						<ImageBackground
-						source={request}
-						imageStyle={styles.cardImage}
-						style={styles.bg}>
-						<View style={styles.searchView}>
-							<Item style={styles.searchForm} rounded>
-								<Input placeholder="Search" onChangeText={search => this.setState({search})} />
-								<Icon size={25} name="search" />
-							</Item>
-						</View>
-						<View style={styles.flatListView}>
-							<FlatList
-								onRefresh={() => this.handleRefresh()}
-								refreshing={this.state.refreshing}
-								data={this.props.pipelines.filter(data => data.step_process === true)}
-								keyExtractor={this.key}
-								renderItem={this.renderItemsRequest} />
-						</View>
+					<Tab heading="PIPELINE REQUEST" style={{ backgroundColor: 'transparent' }}>
+						<ImageBackground source={request} imageStyle={styles.cardImage} style={styles.bg}>
+							<View style={styles.searchView}>
+								<Item style={styles.searchForm} rounded>
+									<Input
+										placeholder="Search"
+										value={this.state.search}
+										onChangeText={search => this.setState({ search })}
+									/>
+									<Icon size={25} name="search" />
+								</Item>
+							</View>
+							<View style={styles.flatListView}>
+								<SearchableFlatlist
+									searchProperty="pipeline"
+									searchTerm={this.state.search}
+									onRefresh={() => this.handleRefresh()}
+									refreshing={this.state.refreshing}
+									data={this.props.pipelines.filter(data => data.step_process === true)}
+									keyExtractor={this.key}
+									renderItem={this.renderItemsRequest}
+								/>
+							</View>
 						</ImageBackground>
 					</Tab>
-					<Tab heading="APPROVED PIPELINE" style={{backgroundColor: 'transparent'}}>
-						<ImageBackground
-							source={approve}
-							imageStyle={styles.cardImage}
-							style={styles.bg}>
-						<View style={styles.searchView}>
-							<Item style={styles.searchForm} rounded>
-								<Input placeholder="Search" />
-								<Icon size={25} name="search" />
-							</Item>
-						</View>
-						<View style={styles.flatListView}>
-							<FlatList 
-								data={this.props.pipelines.filter(data => data.step === 7 && data.step_process === false)}
-								keyExtractor={this.key}
-								renderItem={this.renderItemsApprove} />
-						</View>
+					<Tab heading="APPROVED PIPELINE" style={{ backgroundColor: 'transparent' }}>
+						<ImageBackground source={approve} imageStyle={styles.cardImage} style={styles.bg}>
+							<View style={styles.searchView}>
+								<Item style={styles.searchForm} rounded>
+									<Input
+										placeholder="Search"
+										value={this.state.search}
+										onChangeText={search => this.setState({ search })}
+									/>
+									<Icon size={25} name="search" />
+								</Item>
+							</View>
+							<View style={styles.flatListView}>
+								<SearchableFlatlist
+									searchProperty="pipeline"
+									searchTerm={this.state.search}
+									data={this.props.pipelines.filter(
+										data => data.step === 7 && data.step_process === false
+									)}
+									keyExtractor={this.key}
+									renderItem={this.renderItemsApprove}
+								/>
+							</View>
 						</ImageBackground>
 					</Tab>
 				</Tabs>
@@ -207,14 +220,14 @@ class Pipeline extends Component {
 	}
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
 	pipelines: state.pipelines,
 	sessionPersistance: state.sessionPersistance
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
 	fetchPipelines: (id_branch, accessToken) => dispatch(fetchPipelines(id_branch, accessToken)),
-  setNavigate: (link, data) => dispatch(setNavigate(link, data)),
+	setNavigate: (link, data) => dispatch(setNavigate(link, data))
 })
 
 const styles = StyleSheet.create({
@@ -250,51 +263,52 @@ const styles = StyleSheet.create({
 		width: width / 1.32
 	},
 	customerPipeline: {
-    width: '100%', 
+		width: '100%',
 		minHeight: height / 8,
 		height: 'auto',
-    backgroundColor: '#ffffff', 
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    marginBottom: 15
-  },
-  pipelineContent: {
-    flex: 1,
+		backgroundColor: '#ffffff',
+		flex: 1,
+		display: 'flex',
+		flexDirection: 'row',
+		marginBottom: 15
+	},
+	pipelineContent: {
+		flex: 1,
 		padding: 20,
-    alignItems: 'center',
-  },
-  contentText: {
-    marginTop: 5,
+		alignItems: 'center'
+	},
+	contentText: {
+		marginTop: 5,
 		marginBottom: 5,
 		fontSize: 16
-  },
-  leftPipeline: {
-    flex: 0.6
-  },
-  rightPipeline: {
-		flex: 0.4,
-  },
-  grid: {
-    display: 'flex', 
-    alignItems: 'center'
-  },
-  managerData: {
-    display: 'flex', 
-    justifyContent: 'center'
-  },
-  badge: {
-    backgroundColor:'#2D38F9'
-  },
-  more: {
-    flexDirection: 'row', 
-    justifyContent: 'flex-end', 
-    marginTop: 20
-  },
-  viewText: {
-    marginRight: 10, 
-    textAlign: 'right', 
-    fontWeight: 'bold'
+	},
+	leftPipeline: {
+		flex: 0.6
+	},
+	rightPipeline: {
+		flex: 0.4
+	},
+	grid: {
+		display: 'flex',
+		alignItems: 'center'
+	},
+	managerData: {
+		display: 'flex',
+		justifyContent: 'center'
+	},
+	badge: {
+		backgroundColor: '#2D38F9'
+	},
+	more: {
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+		marginTop: 20
+	},
+	viewText: {
+		marginRight: 10,
+		textAlign: 'right',
+		fontWeight: 'bold'
 	},
 	flatListView: {
 		paddingHorizontal: width / 8,
@@ -302,4 +316,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default connect(mapStateToProps,mapDispatchToProps)(Pipeline)
+export default connect(mapStateToProps, mapDispatchToProps)(Pipeline)
