@@ -212,10 +212,19 @@ class Approval extends Component {
                 <H3>Sales Activity</H3>
               </View>
               <View style={styles.contentActivityRight}>
-                <View>
-                  <Button success onPress={() => this.props.navigation.navigate('History')}>
+                <View style={{ flexDirection: 'row' }}>
+                  <Button success onPress={() => this.props.navigation.navigate('History', params)}>
                     <Text>History</Text>
                   </Button>
+                  {/*
+                    {params.step >= 4 && (
+                    <Button
+                      onPress={() => this.props.navigation.navigate('OrderSummary', params)}
+                      style={{ marginLeft: 20 }}>
+                      <Text>Order Summary</Text>
+                    </Button>
+                  )}
+                  */}
                 </View>
               </View>
             </View>

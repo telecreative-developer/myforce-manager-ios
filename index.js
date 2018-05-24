@@ -21,6 +21,7 @@ import Settings from './app/screens/Settings'
 import EditProfile from './app/screens/EditProfile'
 import ChangePassword from './app/screens/ChangePassword'
 import History from './app/screens/History'
+import OrderSummary from './app/screens/OrderSummary'
 
 const store = Reactotron.createStore(rootReducers, applyMiddleware(thunk))
 
@@ -38,7 +39,8 @@ const AppNavigator = StackNavigator(
     Settings: { screen: Settings },
     EditProfile: { screen: EditProfile },
     ChangePassword: { screen: ChangePassword },
-    History: { screen: History }
+    History: { screen: History },
+    OrderSummary: { screen: OrderSummary }
   },
   {
     headerMode: 'none'

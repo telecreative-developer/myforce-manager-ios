@@ -14,8 +14,8 @@ export const fetchQuestionWithStep = (step, accessToken) => {
 					Authorization: accessToken
 				}
 			})
-      const data = await response.json()
-      await dispatch(receivedQuestionWithStep(data.data[0]))
+			const data = await response.json()
+			await dispatch(receivedQuestionWithStep(data.data[0]))
 			await dispatch(setSuccess(true, 'SUCCESS_FETCH_QUESTION'))
 			await dispatch(setLoading(false, 'LOADING_FETCH_QUESTION'))
 		} catch (e) {
@@ -25,7 +25,7 @@ export const fetchQuestionWithStep = (step, accessToken) => {
 	}
 }
 
-const receivedQuestionWithStep = (data) => ({
-  type: RECEIVED_QUESTION_WITH_STEP,
-  payload: data
+const receivedQuestionWithStep = data => ({
+	type: RECEIVED_QUESTION_WITH_STEP,
+	payload: data
 })

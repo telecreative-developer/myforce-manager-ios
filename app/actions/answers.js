@@ -18,7 +18,7 @@ export const fetchAnswers = (id, id_pipeline, id_customer, accessToken) => {
 				}
 			)
 			const data = await response.json()
-			await dispatch(receivedAnswers(data.data[0]))
+			await dispatch(receivedAnswers(data.data))
 			await dispatch(setSuccess(true, 'SUCCESS_FETCH_ANSWERS'))
 			await dispatch(setLoading(false, 'LOADING_FETCH_ANSWERS'))
 		} catch (e) {

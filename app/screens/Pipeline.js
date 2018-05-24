@@ -127,7 +127,7 @@ class Pipeline extends Component {
 					<Col style={styles.rightPipeline}>
 						<View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
 							<Badge style={styles.badge}>
-								<Text>Done</Text>
+								{item.step === 7 ? <Text>Done</Text> : <Text>Approved</Text>}
 							</Badge>
 						</View>
 						<View style={styles.more}>
@@ -205,9 +205,7 @@ class Pipeline extends Component {
 								<SearchableFlatlist
 									searchProperty="pipeline"
 									searchTerm={this.state.search}
-									data={this.props.pipelines.filter(
-										data => data.step === 7 && data.step_process === false
-									)}
+									data={this.props.pipelines.filter(data => data.step_process === false)}
 									keyExtractor={this.key}
 									renderItem={this.renderItemsApprove}
 								/>
