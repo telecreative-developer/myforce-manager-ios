@@ -47,8 +47,20 @@ class History extends React.Component {
 						<Tab heading={`Step ${d.step}`} key={i}>
 							<Content>
 								<View style={styles.content}>
+									<Text style={styles.textQuestion}>Activity Description</Text>
+									<Text style={styles.textAnswer}>{d.activity_desc}</Text>
+								</View>
+								<View style={styles.content}>
 									<Text style={styles.textQuestion}>{d.questions[0].question}</Text>
 									<Text style={styles.textAnswer}>{d.answer}</Text>
+								</View>
+								<View style={styles.content}>
+									<Text style={styles.textQuestion}>Minutes of Meeting</Text>
+									<Text style={styles.textAnswer}>{d.minutes_of_meeting}</Text>
+								</View>
+								<View style={styles.content}>
+									<Text style={styles.textQuestion}>To Do List</Text>
+									<Text style={styles.textAnswer}>{d.todo_list}</Text>
 								</View>
 							</Content>
 						</Tab>
@@ -74,14 +86,19 @@ const styles = StyleSheet.create({
 		backgroundColor: '#FFFFFF'
 	},
 	content: {
-		margin: 20
+		margin: 20,
+		borderWidth: 1,
+		borderRadius: 1,
+		borderColor: '#e2e2e2'
 	},
 	textQuestion: {
 		fontSize: 20,
+		margin:10,
 		fontWeight: 'bold'
 	},
 	textAnswer: {
-		fontSize: 20
+		fontSize: 20,
+		margin:10
 	}
 })
 
